@@ -18,7 +18,7 @@ module.exports = function(grunt) {
             },
             app : {
                 files : {
-                    './dist-browser/<%= pkg.name %>.js' : [ 'src/index.js' ]
+                    './dist/<%= pkg.name %>.js' : [ 'src/index.js' ]
                 },
                 options : {
                     external : [ 'underscore' ],
@@ -31,8 +31,8 @@ module.exports = function(grunt) {
                 banner : banner
             },
             browser : {
-                src : 'dist-browser/<%= pkg.name %>.js',
-                dest : 'dist-browser/<%= pkg.name %>.min.js'
+                src : 'dist/<%= pkg.name %>.js',
+                dest : 'dist/<%= pkg.name %>.min.js'
             }
         },
         jshint : {

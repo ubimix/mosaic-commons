@@ -1,0 +1,8 @@
+{
+    "name" : "mosaic-commons",
+    "version" : "0.0.1",
+    "main": "dist/mosaic-commons.js",
+    "dependencies" : {
+        "underscore" : "~1.4.4"
+    }
+}
