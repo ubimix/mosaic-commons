@@ -12,15 +12,18 @@ module.exports = function(grunt) {
                 src : [ 'test/**/Test*.js' ]
             }
         },
-        concat : {
-            options : {
-                // define a string to put between each file in the concatenated
-                // output
-                separator : ';\n'
+        browserify : {
+            bundleOptions : {
+                standalone : 'Mosaic.Commons'
             },
-            build : {
-                src : [ 'src/*.js' ],
-                dest : 'dist/<%= pkg.name %>.js'
+            app : {
+                files : {
+                    './dist-browser/<%= pkg.name %>.js' : [ 'src/index.js' ]
+                },
+                options : {
+                    external : [ 'underscore' ],
+                    alias : [ 'src/index.js:<%= pkg.name %>' ]
+                }
             }
         },
         uglify : {
@@ -30,33 +33,15 @@ module.exports = function(grunt) {
             browser : {
                 src : 'dist-browser/<%= pkg.name %>.js',
                 dest : 'dist-browser/<%= pkg.name %>.min.js'
-            },
-            server : {
-                src : 'dist-server/<%= pkg.name %>.js',
-                dest : 'dist-server/<%= pkg.name %>.min.js'
             }
-        },
-        browserify : {
-            browser : {
-                src : [ 'src/index.js' ],
-                dest : './dist-browser/<%= pkg.name %>.js',
-                options : {
-                    external : [ 'underscore' ]
-                }
-            },
-            server : {
-                src : [ 'src/index.js' ],
-                dest : './dist-server/<%= pkg.name %>.js',
-                options : {
-                    external : [ 'underscore', 'when' ]
-                }
-            },
         },
         jshint : {
             files : [ 'gruntfile.js', 'src/**/*.js', 'test/**/*.js' ],
-            // configure JSHint (documented at http://www.jshint.com/docs/)
+            // configure JSHint (documented at
+            // http://www.jshint.com/docs/)
             options : {
-                // more options here if you want to override JSHint defaults
+                // more options here if you want to override JSHint
+                // defaults
                 globals : {
                     console : true,
                     module : true,
@@ -68,10 +53,10 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    // grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('browserify-shim');
 
     // this would be run by typing "grunt test" on the command line
     grunt.registerTask('test', [ 'jshint', 'mochaTest' ]);
@@ -80,9 +65,4 @@ module.exports = function(grunt) {
     // the default task can be run just by typing "grunt" on the command line
     grunt.registerTask('default', [ 'jshint', 'mochaTest', 'browserify',
             'uglify' ]);
-
-    // A very basic default task.
-    // grunt.registerTask('default', 'Log some stuff.', function() {
-    // grunt.log.write('Logging some stuff...').ok();
-    // });
-};
+}

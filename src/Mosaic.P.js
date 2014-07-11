@@ -29,7 +29,7 @@
 
  *     
  */
-module.exports = (function(context, require) {
+module.exports = (function(require) {
     "use strict";
     var Mosaic = module.exports = require('./Mosaic');
     var LIB = require('when');
@@ -55,7 +55,7 @@ module.exports = (function(context, require) {
     };
     P.timeout = LIB.timeout ? LIB.timeout : function(ms, message) {
         var deferred = P.defer();
-        var timeoutId = context.setTimeout(function() {
+        var timeoutId = setTimeout(function() {
             message = message || //
             "Timed out after " + ms + " ms";
             deferred.reject(new Error(message));
@@ -68,10 +68,9 @@ module.exports = (function(context, require) {
             throw exception;
         });
     };
-    P.delay = LIB.delay || function(timeout, promise) {
+    P.delay = LIB.delay || function(timeout) {
         timeout = timeout || 0;
-        promise = promise || P.promise();
-        return promise.then(function(value) {
+        return P.then(function(value) {
             var deferred = P.defer();
             var timeoutId = setTimeout(function() {
                 deferred.resolve(value);
@@ -144,4 +143,4 @@ module.exports = (function(context, require) {
     };
 
     return Mosaic;
-})(this, require);
+})(require);

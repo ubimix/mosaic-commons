@@ -1,6 +1,5 @@
 var expect = require('expect.js');
-var Mosaic = require('../src/Mosaic');
-require('../src/Mosaic.P');
+var Mosaic = require('..');
 var P = Mosaic.P;
 var _ = require('underscore');
 
