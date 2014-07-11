@@ -14,7 +14,7 @@ module.exports = function(grunt) {
         },
         browserify : {
             bundleOptions : {
-                standalone : 'Mosaic.Commons'
+                standalone : '<%= pkg.name %>'
             },
             app : {
                 files : {
