@@ -56,7 +56,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-browserify');
-    grunt.loadNpmTasks('browserify-shim');
 
     // this would be run by typing "grunt test" on the command line
     grunt.registerTask('test', [ 'jshint', 'mochaTest' ]);

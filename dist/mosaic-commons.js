@@ -2170,7 +2170,7 @@ define(function (require) {
 (function (global){
 (function(context, require) {
     var Mosaic = module.exports = require('./Mosaic');
-    var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
+    var _ = (typeof window !== "undefined" ? window.Mosaic.libs.underscore : typeof global !== "undefined" ? global.Mosaic.libs.underscore : null);
 
     /** Common superclass for all other types. */
     function copy(to, from) {
@@ -2263,7 +2263,7 @@ define(function (require) {
 (function(context, require) {
     'use strict';
     var Mosaic = module.exports = require('./Mosaic');
-    var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
+    var _ = (typeof window !== "undefined" ? window.Mosaic.libs.underscore : typeof global !== "undefined" ? global.Mosaic.libs.underscore : null);
     Mosaic.Errors = Errors;
 
     function Errors() {
@@ -2489,8 +2489,14 @@ module.exports = (function(require) {
 })(require);
 
 },{"./Mosaic":22,"when":18}],22:[function(require,module,exports){
-module.exports = {};
+(function (global){
+(function(glob) {
+    'use strict';
+    module.exports = glob.Mosaic = glob.Mosaic || {};
+})((typeof window !== "undefined" ? window
+        : typeof global !== "undefined" ? global : null));
 
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"H99CHA":[function(require,module,exports){
 module.exports = require('./Mosaic');
 require('./Mosaic.Class');
