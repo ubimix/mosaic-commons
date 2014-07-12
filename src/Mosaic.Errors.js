@@ -30,7 +30,15 @@
     };
 
     function newError(o) {
-        var obj = o instanceof Error ? o : new Error(o);
+        var obj;
+        if (o instanceof Error) {
+            obj = o;
+        } else {
+            if (_.isString(o) && o.indexOf('Error: ') === 0) {
+                o = o.substring('Error: '.length);
+            }
+            obj = new Error(o);
+        }
         _.extend(obj, ErrorMethods);
         return obj;
     }
