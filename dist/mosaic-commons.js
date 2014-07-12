@@ -2247,6 +2247,9 @@ define(function (require) {
         Type.prototype.getClass = function() {
             return Type;
         };
+        Type.prototype.setOptions = function(options) {
+            this.options = _.extend({}, this.options, options);
+        };
         Type._typeId = typeCounter++;
         Type.toString = function() {
             return 'class-' + (Type._typeId) + '';
@@ -2279,8 +2282,8 @@ define(function (require) {
     var ErrorMethods = {
         code : function(value) {
             if (value === undefined)
-                return this._code;
-            this._code = value;
+                return this.status;
+            this.status = value;
             return this;
         },
         messageKey : function(value) {
@@ -2318,7 +2321,7 @@ define(function (require) {
         if (error) {
             errObj.message = error + '';
             errObj.messageKey = error._messageKey;
-            errObj.code = error._code || 500;
+            errObj.status = error.status || 500;
             if (_.isArray(error.stack)) {
                 errObj.trace = clone(error.stack);
             } else if (_.isString(error.stack)) {
@@ -2395,6 +2398,21 @@ module.exports = (function(require) {
     P.then = LIB.then || function() {
         var p = new P();
         return p.then.apply(p, arguments);
+    };
+    P.fin = function(promise, method) {
+        return promise.then(function(result) {
+            return P.then(function() {
+                return method(null, result);
+            }).then(function() {
+                return result;
+            });
+        }, function(err) {
+            return P.then(function() {
+                return method(err);
+            }).then(function() {
+                throw err;
+            });
+        });
     };
     P.timeout = LIB.timeout ? LIB.timeout : function(ms, message) {
         var deferred = P.defer();

@@ -77,6 +77,9 @@
         Type.prototype.getClass = function() {
             return Type;
         };
+        Type.prototype.setOptions = function(options) {
+            this.options = _.extend({}, this.options, options);
+        };
         Type._typeId = typeCounter++;
         Type.toString = function() {
             return 'class-' + (Type._typeId) + '';

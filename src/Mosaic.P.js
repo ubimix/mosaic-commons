@@ -53,6 +53,21 @@ module.exports = (function(require) {
         var p = new P();
         return p.then.apply(p, arguments);
     };
+    P.fin = function(promise, method) {
+        return promise.then(function(result) {
+            return P.then(function() {
+                return method(null, result);
+            }).then(function() {
+                return result;
+            });
+        }, function(err) {
+            return P.then(function() {
+                return method(err);
+            }).then(function() {
+                throw err;
+            });
+        });
+    };
     P.timeout = LIB.timeout ? LIB.timeout : function(ms, message) {
         var deferred = P.defer();
         var timeoutId = setTimeout(function() {

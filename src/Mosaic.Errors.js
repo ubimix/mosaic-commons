@@ -17,8 +17,8 @@
     var ErrorMethods = {
         code : function(value) {
             if (value === undefined)
-                return this._code;
-            this._code = value;
+                return this.status;
+            this.status = value;
             return this;
         },
         messageKey : function(value) {
@@ -56,7 +56,7 @@
         if (error) {
             errObj.message = error + '';
             errObj.messageKey = error._messageKey;
-            errObj.code = error._code || 500;
+            errObj.status = error.status || 500;
             if (_.isArray(error.stack)) {
                 errObj.trace = clone(error.stack);
             } else if (_.isString(error.stack)) {
