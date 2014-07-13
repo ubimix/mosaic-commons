@@ -2167,10 +2167,9 @@ define(function (_dereq_) {
 })(typeof define === 'function' && define.amd ? define : function (factory) { module.exports = factory(_dereq_); });
 
 },{"./lib/Promise":2,"./lib/TimeoutError":5,"./lib/decorators/array":7,"./lib/decorators/flow":8,"./lib/decorators/fold":9,"./lib/decorators/inspect":10,"./lib/decorators/iterate":11,"./lib/decorators/progress":12,"./lib/decorators/timed":13,"./lib/decorators/unhandledRejection":14,"./lib/decorators/with":15}],19:[function(_dereq_,module,exports){
-(function (global){
 (function(context, _dereq_) {
     var Mosaic = module.exports = _dereq_('./Mosaic');
-    var _ = (typeof window !== "undefined" ? window.Mosaic.libs.underscore : typeof global !== "undefined" ? global.Mosaic.libs.underscore : null);
+    var _ = _dereq_('underscore');
 
     /** Common superclass for all other types. */
     function copy(to, from) {
@@ -2260,13 +2259,11 @@ define(function (_dereq_) {
     var Class = newClass();
     Mosaic.Class = Class;
 })(this, _dereq_);
-}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./Mosaic":22}],20:[function(_dereq_,module,exports){
-(function (global){
 (function(context, _dereq_) {
     'use strict';
     var Mosaic = module.exports = _dereq_('./Mosaic');
-    var _ = (typeof window !== "undefined" ? window.Mosaic.libs.underscore : typeof global !== "undefined" ? global.Mosaic.libs.underscore : null);
+    var _ = _dereq_('underscore');
     Mosaic.Errors = Errors;
 
     function Errors() {
@@ -2350,7 +2347,6 @@ define(function (_dereq_) {
     }
     return Mosaic;
 })(this, _dereq_);
-}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./Mosaic":22}],21:[function(_dereq_,module,exports){
 /*
  * Static methods: 
@@ -2518,7 +2514,7 @@ module.exports = (function(_dereq_) {
 (function (global){
 (function(glob) {
     'use strict';
-    module.exports = glob.Mosaic = glob.Mosaic || {};
+    module.exports = glob.Mosaic || {};
 })((typeof window !== "undefined" ? window
         : typeof global !== "undefined" ? global : null));
 

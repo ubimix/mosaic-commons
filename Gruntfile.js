@@ -16,8 +16,8 @@ module.exports = function(grunt) {
             standalone : {
                 src : [ 'src/index.js' ],
                 dest : './dist/<%= pkg.name %>.js',
-                external : [ 'underscore' ],
                 options : {
+                    exclude : [ 'underscore' ],
                     bundleOptions : {
                         standalone : '<%= pkg.name %>'
                     }
