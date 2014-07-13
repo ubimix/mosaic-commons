@@ -1,4 +1,4 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var o;"undefined"!=typeof window?o=window:"undefined"!=typeof global?o=global:"undefined"!=typeof self&&(o=self),o.mosaicCommons=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -63,26 +63,26 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],2:[function(require,module,exports){
+},{}],2:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 (function(define) { 'use strict';
-define(function (require) {
+define(function (_dereq_) {
 
-	var makePromise = require('./makePromise');
-	var Scheduler = require('./Scheduler');
-	var async = require('./async');
+	var makePromise = _dereq_('./makePromise');
+	var Scheduler = _dereq_('./Scheduler');
+	var async = _dereq_('./async');
 
 	return makePromise({
 		scheduler: new Scheduler(async)
 	});
 
 });
-})(typeof define === 'function' && define.amd ? define : function (factory) { module.exports = factory(require); });
+})(typeof define === 'function' && define.amd ? define : function (factory) { module.exports = factory(_dereq_); });
 
-},{"./Scheduler":4,"./async":6,"./makePromise":16}],3:[function(require,module,exports){
+},{"./Scheduler":4,"./async":6,"./makePromise":16}],3:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -154,15 +154,15 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],4:[function(require,module,exports){
+},{}],4:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 (function(define) { 'use strict';
-define(function(require) {
+define(function(_dereq_) {
 
-	var Queue = require('./Queue');
+	var Queue = _dereq_('./Queue');
 
 	// Credit to Twisol (https://github.com/Twisol) for suggesting
 	// this type of extensible queue + trampoline approach for next-tick conflation.
@@ -236,9 +236,9 @@ define(function(require) {
 	return Scheduler;
 
 });
-}(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(require); }));
+}(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(_dereq_); }));
 
-},{"./Queue":3}],5:[function(require,module,exports){
+},{"./Queue":3}],5:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -266,14 +266,14 @@ define(function() {
 	return TimeoutError;
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
-},{}],6:[function(require,module,exports){
+},{}],6:[function(_dereq_,module,exports){
 (function (process){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 (function(define) { 'use strict';
-define(function(require) {
+define(function(_dereq_) {
 
 	// Sniff "best" async scheduling option
 	// Prefer process.nextTick or MutationObserver, then check for
@@ -323,15 +323,15 @@ define(function(require) {
 			return function (t) {
 				capturedSetTimeout(t, 0);
 			};
-		}(require));
+		}(_dereq_));
 	}
 
 	return nextTick;
 });
-}(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(require); }));
+}(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(_dereq_); }));
 
-}).call(this,require("JkpR2F"))
-},{"JkpR2F":1}],7:[function(require,module,exports){
+}).call(this,_dereq_("JkpR2F"))
+},{"JkpR2F":1}],7:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -526,7 +526,7 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],8:[function(require,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -674,7 +674,7 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],9:[function(require,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -703,7 +703,7 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],10:[function(require,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -723,7 +723,7 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],11:[function(require,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -788,7 +788,7 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],12:[function(require,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -813,16 +813,16 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],13:[function(require,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 (function(define) { 'use strict';
-define(function(require) {
+define(function(_dereq_) {
 
-	var timer = require('../timer');
-	var TimeoutError = require('../TimeoutError');
+	var timer = _dereq_('../timer');
+	var TimeoutError = _dereq_('../TimeoutError');
 
 	function setTimeout(f, ms, x, y) {
 		return timer.set(function() {
@@ -891,17 +891,17 @@ define(function(require) {
 	};
 
 });
-}(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(require); }));
+}(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(_dereq_); }));
 
-},{"../TimeoutError":5,"../timer":17}],14:[function(require,module,exports){
+},{"../TimeoutError":5,"../timer":17}],14:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 (function(define) { 'use strict';
-define(function(require) {
+define(function(_dereq_) {
 
-	var timer = require('../timer');
+	var timer = _dereq_('../timer');
 
 	return function unhandledRejection(Promise) {
 		var logError = noop;
@@ -995,9 +995,9 @@ define(function(require) {
 	function noop() {}
 
 });
-}(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(require); }));
+}(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(_dereq_); }));
 
-},{"../timer":17}],15:[function(require,module,exports){
+},{"../timer":17}],15:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1031,7 +1031,7 @@ define(function() {
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
 
-},{}],16:[function(require,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -1877,17 +1877,17 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],17:[function(require,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
 
 (function(define) { 'use strict';
-define(function(require) {
+define(function(_dereq_) {
 	/*global setTimeout,clearTimeout*/
 	var cjsRequire, vertx, setTimer, clearTimer;
 
-	cjsRequire = require;
+	cjsRequire = _dereq_;
 
 	try {
 		vertx = cjsRequire('vertx');
@@ -1904,9 +1904,9 @@ define(function(require) {
 	};
 
 });
-}(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(require); }));
+}(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(_dereq_); }));
 
-},{}],18:[function(require,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 
 /**
@@ -1917,24 +1917,24 @@ define(function(require) {
  * @version 3.3.1
  */
 (function(define) { 'use strict';
-define(function (require) {
+define(function (_dereq_) {
 
-	var timed = require('./lib/decorators/timed');
-	var array = require('./lib/decorators/array');
-	var flow = require('./lib/decorators/flow');
-	var fold = require('./lib/decorators/fold');
-	var inspect = require('./lib/decorators/inspect');
-	var generate = require('./lib/decorators/iterate');
-	var progress = require('./lib/decorators/progress');
-	var withThis = require('./lib/decorators/with');
-	var unhandledRejection = require('./lib/decorators/unhandledRejection');
-	var TimeoutError = require('./lib/TimeoutError');
+	var timed = _dereq_('./lib/decorators/timed');
+	var array = _dereq_('./lib/decorators/array');
+	var flow = _dereq_('./lib/decorators/flow');
+	var fold = _dereq_('./lib/decorators/fold');
+	var inspect = _dereq_('./lib/decorators/inspect');
+	var generate = _dereq_('./lib/decorators/iterate');
+	var progress = _dereq_('./lib/decorators/progress');
+	var withThis = _dereq_('./lib/decorators/with');
+	var unhandledRejection = _dereq_('./lib/decorators/unhandledRejection');
+	var TimeoutError = _dereq_('./lib/TimeoutError');
 
 	var Promise = [array, flow, fold, generate, progress,
 		inspect, withThis, timed, unhandledRejection]
 		.reduce(function(Promise, feature) {
 			return feature(Promise);
-		}, require('./lib/Promise'));
+		}, _dereq_('./lib/Promise'));
 
 	var slice = Array.prototype.slice;
 
@@ -2164,12 +2164,12 @@ define(function (require) {
 
 	return when;
 });
-})(typeof define === 'function' && define.amd ? define : function (factory) { module.exports = factory(require); });
+})(typeof define === 'function' && define.amd ? define : function (factory) { module.exports = factory(_dereq_); });
 
-},{"./lib/Promise":2,"./lib/TimeoutError":5,"./lib/decorators/array":7,"./lib/decorators/flow":8,"./lib/decorators/fold":9,"./lib/decorators/inspect":10,"./lib/decorators/iterate":11,"./lib/decorators/progress":12,"./lib/decorators/timed":13,"./lib/decorators/unhandledRejection":14,"./lib/decorators/with":15}],19:[function(require,module,exports){
+},{"./lib/Promise":2,"./lib/TimeoutError":5,"./lib/decorators/array":7,"./lib/decorators/flow":8,"./lib/decorators/fold":9,"./lib/decorators/inspect":10,"./lib/decorators/iterate":11,"./lib/decorators/progress":12,"./lib/decorators/timed":13,"./lib/decorators/unhandledRejection":14,"./lib/decorators/with":15}],19:[function(_dereq_,module,exports){
 (function (global){
-(function(context, require) {
-    var Mosaic = module.exports = require('./Mosaic');
+(function(context, _dereq_) {
+    var Mosaic = module.exports = _dereq_('./Mosaic');
     var _ = (typeof window !== "undefined" ? window.Mosaic.libs.underscore : typeof global !== "undefined" ? global.Mosaic.libs.underscore : null);
 
     /** Common superclass for all other types. */
@@ -2259,13 +2259,13 @@ define(function (require) {
 
     var Class = newClass();
     Mosaic.Class = Class;
-})(this, require);
+})(this, _dereq_);
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./Mosaic":22}],20:[function(require,module,exports){
+},{"./Mosaic":22}],20:[function(_dereq_,module,exports){
 (function (global){
-(function(context, require) {
+(function(context, _dereq_) {
     'use strict';
-    var Mosaic = module.exports = require('./Mosaic');
+    var Mosaic = module.exports = _dereq_('./Mosaic');
     var _ = (typeof window !== "undefined" ? window.Mosaic.libs.underscore : typeof global !== "undefined" ? global.Mosaic.libs.underscore : null);
     Mosaic.Errors = Errors;
 
@@ -2349,9 +2349,9 @@ define(function (require) {
         return obj ? JSON.parse(JSON.stringify(obj)) : null;
     }
     return Mosaic;
-})(this, require);
+})(this, _dereq_);
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./Mosaic":22}],21:[function(require,module,exports){
+},{"./Mosaic":22}],21:[function(_dereq_,module,exports){
 /*
  * Static methods: 
  *    P.promise                 - Create a pending promise
@@ -2383,10 +2383,10 @@ define(function (require) {
 
  *     
  */
-module.exports = (function(require) {
+module.exports = (function(_dereq_) {
     "use strict";
-    var Mosaic = module.exports = require('./Mosaic');
-    var LIB = require('when');
+    var Mosaic = module.exports = _dereq_('./Mosaic');
+    var LIB = _dereq_('when');
     function array_slice(array, count) {
         return Array.prototype.slice.call(array, count);
     }
@@ -2512,9 +2512,9 @@ module.exports = (function(require) {
     };
 
     return Mosaic;
-})(require);
+})(_dereq_);
 
-},{"./Mosaic":22,"when":18}],22:[function(require,module,exports){
+},{"./Mosaic":22,"when":18}],22:[function(_dereq_,module,exports){
 (function (global){
 (function(glob) {
     'use strict';
@@ -2523,11 +2523,11 @@ module.exports = (function(require) {
         : typeof global !== "undefined" ? global : null));
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"H99CHA":[function(require,module,exports){
-module.exports = require('./Mosaic');
-require('./Mosaic.Class');
-require('./Mosaic.Errors');
-require('./Mosaic.P');
-},{"./Mosaic":22,"./Mosaic.Class":19,"./Mosaic.Errors":20,"./Mosaic.P":21}],"mosaic-commons":[function(require,module,exports){
-module.exports=require('H99CHA');
-},{}]},{},["H99CHA"]);
+},{}],23:[function(_dereq_,module,exports){
+module.exports = _dereq_('./Mosaic');
+_dereq_('./Mosaic.Class');
+_dereq_('./Mosaic.Errors');
+_dereq_('./Mosaic.P');
+},{"./Mosaic":22,"./Mosaic.Class":19,"./Mosaic.Errors":20,"./Mosaic.P":21}]},{},[23])
+(23)
+});

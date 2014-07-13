@@ -13,18 +13,16 @@ module.exports = function(grunt) {
             }
         },
         browserify : {
-            bundleOptions : {
-                standalone : '<%= pkg.name %>'
-            },
-            app : {
-                files : {
-                    './dist/<%= pkg.name %>.js' : [ 'src/index.js' ]
-                },
+            standalone : {
+                src : [ 'src/index.js' ],
+                dest : './dist/<%= pkg.name %>.js',
+                external : [ 'underscore' ],
                 options : {
-                    external : [ 'underscore' ],
-                    alias : [ 'src/index.js:<%= pkg.name %>' ]
+                    bundleOptions : {
+                        standalone : '<%= pkg.name %>'
+                    }
                 }
-            }
+            },
         },
         uglify : {
             options : {
