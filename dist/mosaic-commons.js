@@ -2167,186 +2167,181 @@ define(function (_dereq_) {
 })(typeof define === 'function' && define.amd ? define : function (factory) { module.exports = factory(_dereq_); });
 
 },{"./lib/Promise":2,"./lib/TimeoutError":5,"./lib/decorators/array":7,"./lib/decorators/flow":8,"./lib/decorators/fold":9,"./lib/decorators/inspect":10,"./lib/decorators/iterate":11,"./lib/decorators/progress":12,"./lib/decorators/timed":13,"./lib/decorators/unhandledRejection":14,"./lib/decorators/with":15}],19:[function(_dereq_,module,exports){
-(function(context, _dereq_) {
-    var Mosaic = module.exports = _dereq_('./Mosaic');
-    var _ = _dereq_('underscore');
+var Mosaic = module.exports = _dereq_('./Mosaic');
+var _ = _dereq_('underscore');
 
-    /** Common superclass for all other types. */
-    function copy(to, from) {
-        for ( var name in from) {
-            if (_.has(from, name) && name !== 'prototype') {
-                to[name] = from[name];
-            }
+/** Common superclass for all other types. */
+function copy(to, from) {
+    for ( var name in from) {
+        if (_.has(from, name) && name !== 'prototype') {
+            to[name] = from[name];
         }
     }
-    function extend() {
-        var that = this;
-        return newClass.apply(that, arguments);
-    }
+}
+function extend() {
+    var that = this;
+    return newClass.apply(that, arguments);
+}
 
-    /**
-     * Returns <code>true</code> if this type is the same as the specified
-     * object.
-     */
-    function isSameType(type) {
-        if (!type || !type._typeId)
-            return false;
-        return this._typeId == type._typeId;
-    }
+/**
+ * Returns <code>true</code> if this type is the same as the specified object.
+ */
+function isSameType(type) {
+    if (!type || !type._typeId)
+        return false;
+    return this._typeId == type._typeId;
+}
 
-    /**
-     * Returns <code>true</code> if this type is the same or is a subclass of
-     * the specified type.
-     */
-    function isSubtype(type, includeThis) {
-        if (!type || !type._typeId)
-            return false;
-        var result = false;
-        for (var t = includeThis ? this : this.parent; // 
-        !result && !!t && t._typeId !== undefined; t = t.parent) {
-            result = t._typeId == type._typeId;
+/**
+ * Returns <code>true</code> if this type is the same or is a subclass of the
+ * specified type.
+ */
+function isSubtype(type, includeThis) {
+    if (!type || !type._typeId)
+        return false;
+    var result = false;
+    for (var t = includeThis ? this : this.parent; // 
+    !result && !!t && t._typeId !== undefined; t = t.parent) {
+        result = t._typeId == type._typeId;
+    }
+    return result;
+}
+
+/** Returns true if this object is an instance of the specified type */
+function instanceOf(type) {
+    var cls = this['class'];
+    return isSubtype.call(cls, type, true);
+}
+
+/** Returns true if the specified object is an instance of this class */
+function hasInstance(obj) {
+    if (!obj)
+        return false;
+    return instanceOf.call(obj, this);
+}
+
+var typeCounter = 0;
+function newClass() {
+    function Type() {
+        if (this.initialize) {
+            this.initialize.apply(this, arguments);
         }
-        return result;
     }
-
-    /** Returns true if this object is an instance of the specified type */
-    function instanceOf(type) {
-        var cls = this['class'];
-        return isSubtype.call(cls, type, true);
+    Type.extend = extend;
+    Type.isSameType = isSameType;
+    Type.isSubtype = isSubtype;
+    Type.hasInstance = hasInstance;
+    if (this) {
+        copy(Type, this);
+        copy(Type.prototype, this.prototype);
+        Type.parent = this;
     }
-
-    /** Returns true if the specified object is an instance of this class */
-    function hasInstance(obj) {
-        if (!obj)
-            return false;
-        return instanceOf.call(obj, this);
-    }
-
-    var typeCounter = 0;
-    function newClass() {
-        function Type() {
-            if (this.initialize) {
-                this.initialize.apply(this, arguments);
-            }
-        }
-        Type.extend = extend;
-        Type.isSameType = isSameType;
-        Type.isSubtype = isSubtype;
-        Type.hasInstance = hasInstance;
-        if (this) {
-            copy(Type, this);
-            copy(Type.prototype, this.prototype);
-            Type.parent = this;
-        }
-        _.each(arguments, function(fields) {
-            copy(Type.prototype, fields);
-        });
-        Type.prototype.instanceOf = instanceOf;
-        Type.prototype['class'] = Type;
-        Type.prototype.getClass = function() {
-            return Type;
-        };
-        Type.prototype.setOptions = function(options) {
-            this.options = _.extend({}, this.options, options);
-        };
-        Type._typeId = typeCounter++;
-        Type.toString = function() {
-            return 'class-' + (Type._typeId) + '';
-        };
-        return Type;
-    }
-
-    var Class = newClass();
-    Mosaic.Class = Class;
-})(this, _dereq_);
-},{"./Mosaic":22}],20:[function(_dereq_,module,exports){
-(function(context, _dereq_) {
-    'use strict';
-    var Mosaic = module.exports = _dereq_('./Mosaic');
-    var _ = _dereq_('underscore');
-    Mosaic.Errors = Errors;
-
-    function Errors() {
-        var m = Errors.newError;
-        return m.apply(m, arguments);
-    }
-    _.extend(Errors, {
-        newError : newError,
-        toJSON : toJSON,
-        fromJSON : fromJSON
+    _.each(arguments, function(fields) {
+        copy(Type.prototype, fields);
     });
-
-    var ErrorMethods = {
-        code : function(value) {
-            if (value === undefined)
-                return this.status;
-            this.status = value;
-            return this;
-        },
-        messageKey : function(value) {
-            if (value === undefined)
-                return this._messageKey;
-            this._messageKey = value;
-            return this;
-        }
+    Type.prototype.instanceOf = instanceOf;
+    Type.prototype['class'] = Type;
+    Type.prototype.getClass = function() {
+        return Type;
     };
+    Type.prototype.setOptions = function(options) {
+        this.options = _.extend({}, this.options, options);
+    };
+    Type._typeId = typeCounter++;
+    Type.toString = function() {
+        return 'class-' + (Type._typeId) + '';
+    };
+    return Type;
+}
 
-    function newError(o) {
-        var obj;
-        if (o instanceof Error) {
-            obj = o;
+var Class = newClass();
+Mosaic.Class = Class;
+
+},{"./Mosaic":22}],20:[function(_dereq_,module,exports){
+var Mosaic = module.exports = _dereq_('./Mosaic');
+var _ = _dereq_('underscore');
+Mosaic.Errors = Errors;
+
+function Errors() {
+    var m = Errors.newError;
+    return m.apply(m, arguments);
+}
+_.extend(Errors, {
+    newError : newError,
+    toJSON : toJSON,
+    fromJSON : fromJSON
+});
+
+var ErrorMethods = {
+    code : function(value) {
+        if (value === undefined)
+            return this.status;
+        this.status = value;
+        return this;
+    },
+    messageKey : function(value) {
+        if (value === undefined)
+            return this._messageKey;
+        this._messageKey = value;
+        return this;
+    }
+};
+
+function newError(o) {
+    var obj;
+    if (o instanceof Error) {
+        obj = o;
+    } else {
+        if (_.isString(o) && o.indexOf('Error: ') === 0) {
+            o = o.substring('Error: '.length);
+        }
+        obj = new Error(o);
+    }
+    _.extend(obj, ErrorMethods);
+    return obj;
+}
+
+function fromJSON(obj) {
+    var error = newError(obj.message);
+    if (_.isArray(obj.trace)) {
+        error.stack = obj.trace.join('\n');
+    }
+    if (obj.code) {
+        error.code(obj.code);
+    }
+    if (obj.messageKey) {
+        error.messageKey(obj.messageKey);
+    }
+    return error;
+}
+
+function toJSON(error) {
+    var errObj = {
+        message : 'ERROR'
+    };
+    if (error) {
+        errObj.message = error + '';
+        errObj.messageKey = error._messageKey;
+        errObj.status = error.status || 500;
+        if (_.isArray(error.stack)) {
+            errObj.trace = clone(error.stack);
+        } else if (_.isString(error.stack)) {
+            errObj.trace = error.stack.split(/[\r\n]+/gim);
+        } else if (_.isObject(error)) {
+            _.each(_.keys(error), function(key) {
+                errObj[key] = error[key];
+            });
         } else {
-            if (_.isString(o) && o.indexOf('Error: ') === 0) {
-                o = o.substring('Error: '.length);
-            }
-            obj = new Error(o);
+            errObj.trace = [ JSON.stringify(error) ];
         }
-        _.extend(obj, ErrorMethods);
-        return obj;
     }
+    return errObj;
+}
 
-    function fromJSON(obj) {
-        var error = newError(obj.message);
-        if (_.isArray(obj.trace)) {
-            error.stack = obj.trace.join('\n');
-        }
-        if (obj.code) {
-            error.code(obj.code);
-        }
-        if (obj.messageKey) {
-            error.messageKey(obj.messageKey);
-        }
-        return error;
-    }
+function clone(obj) {
+    return obj ? JSON.parse(JSON.stringify(obj)) : null;
+}
 
-    function toJSON(error) {
-        var errObj = {
-            message : 'ERROR'
-        };
-        if (error) {
-            errObj.message = error + '';
-            errObj.messageKey = error._messageKey;
-            errObj.status = error.status || 500;
-            if (_.isArray(error.stack)) {
-                errObj.trace = clone(error.stack);
-            } else if (_.isString(error.stack)) {
-                errObj.trace = error.stack.split(/[\r\n]+/gim);
-            } else if (_.isObject(error)) {
-                _.each(_.keys(error), function(key) {
-                    errObj[key] = error[key];
-                });
-            } else {
-                errObj.trace = [ JSON.stringify(error) ];
-            }
-        }
-        return errObj;
-    }
-
-    function clone(obj) {
-        return obj ? JSON.parse(JSON.stringify(obj)) : null;
-    }
-    return Mosaic;
-})(this, _dereq_);
 },{"./Mosaic":22}],21:[function(_dereq_,module,exports){
 /*
  * Static methods: 
@@ -2379,146 +2374,134 @@ define(function (_dereq_) {
 
  *     
  */
-module.exports = (function(_dereq_) {
-    "use strict";
-    var Mosaic = module.exports = _dereq_('./Mosaic');
-    var LIB = _dereq_('when');
-    function array_slice(array, count) {
-        return Array.prototype.slice.call(array, count);
-    }
+var Mosaic = module.exports = _dereq_('./Mosaic');
+var LIB = _dereq_('when');
+function array_slice(array, count) {
+    return Array.prototype.slice.call(array, count);
+}
 
-    Mosaic.P = P;
-    function P() {
-        return LIB.apply(this, arguments);
-    }
-    var array = [ 'promise', 'resolve', 'reject', 'defer', 'join', 'all',
-            'spread' ];
-    for (var i = 0; i < array.length; i++) {
-        P[array[i]] = LIB[array[i]];
-    }
-    P.promise = LIB.promise || function() {
-        return new P();
-    };
-    P.then = LIB.then || function() {
-        var p = new P();
-        return p.then.apply(p, arguments);
-    };
-    P.fin = function(promise, method) {
-        return promise.then(function(result) {
-            return P.then(function() {
-                return method(null, result);
-            }).then(function() {
-                return result;
-            });
-        }, function(err) {
-            return P.then(function() {
-                return method(err);
-            }).then(function() {
-                throw err;
-            });
+Mosaic.P = P;
+function P() {
+    return LIB.apply(this, arguments);
+}
+var array = [ 'promise', 'resolve', 'reject', 'defer', 'join', 'all', 'spread' ];
+for (var i = 0; i < array.length; i++) {
+    P[array[i]] = LIB[array[i]];
+}
+P.promise = LIB.promise || function() {
+    return new P();
+};
+P.then = LIB.then || function() {
+    var p = new P();
+    return p.then.apply(p, arguments);
+};
+P.fin = function(promise, method) {
+    return promise.then(function(result) {
+        return P.then(function() {
+            return method(null, result);
+        }).then(function() {
+            return result;
         });
-    };
-    P.timeout = LIB.timeout ? LIB.timeout : function(ms, message) {
+    }, function(err) {
+        return P.then(function() {
+            return method(err);
+        }).then(function() {
+            throw err;
+        });
+    });
+};
+P.timeout = LIB.timeout ? LIB.timeout : function(ms, message) {
+    var deferred = P.defer();
+    var timeoutId = setTimeout(function() {
+        message = message || //
+        "Timed out after " + ms + " ms";
+        deferred.reject(new Error(message));
+    }, ms);
+    return deferred.promise.then(function(value) {
+        clearTimeout(timeoutId);
+        return value;
+    }, function(exception) {
+        clearTimeout(timeoutId);
+        throw exception;
+    });
+};
+P.delay = LIB.delay || function(timeout) {
+    timeout = timeout || 0;
+    return P.then(function(value) {
         var deferred = P.defer();
         var timeoutId = setTimeout(function() {
-            message = message || //
-            "Timed out after " + ms + " ms";
-            deferred.reject(new Error(message));
-        }, ms);
-        return deferred.promise.then(function(value) {
+            deferred.resolve(value);
+        }, timeout);
+        deferred.promise.cancel = function() {
             clearTimeout(timeoutId);
-            return value;
-        }, function(exception) {
-            clearTimeout(timeoutId);
-            throw exception;
-        });
+            deferred.resolve(value);
+        };
+        return deferred.promise;
+    });
+};
+P.nresolver = function(deferred) {
+    return function(error, value) {
+        if (error) {
+            deferred.reject(error);
+        } else if (arguments.length > 2) {
+            deferred.resolve(array_slice(arguments, 1));
+        } else {
+            deferred.resolve(value);
+        }
     };
-    P.delay = LIB.delay || function(timeout) {
-        timeout = timeout || 0;
-        return P.then(function(value) {
+};
+P.nwrapper = function(object, methods) {
+    var result = {
+        instance : object
+    };
+    function addResult(name) {
+        result[name] = function() {
             var deferred = P.defer();
-            var timeoutId = setTimeout(function() {
-                deferred.resolve(value);
-            }, timeout);
-            deferred.promise.cancel = function() {
-                clearTimeout(timeoutId);
-                deferred.resolve(value);
-            };
-            return deferred.promise;
-        });
-    };
-    P.nresolver = function(deferred) {
-        return function(error, value) {
-            if (error) {
-                deferred.reject(error);
-            } else if (arguments.length > 2) {
-                deferred.resolve(array_slice(arguments, 1));
-            } else {
-                deferred.resolve(value);
+            try {
+                var args = array_slice(arguments);
+                args.push(P.nresolver(deferred));
+                object[name].apply(object, args);
+            } catch (e) {
+                deferred.reject(e);
             }
+            return deferred.promise;
         };
-    };
-    P.nwrapper = function(object, methods) {
-        var result = {
-            instance : object
-        };
-        function addResult(name) {
-            result[name] = function() {
-                var deferred = P.defer();
-                try {
-                    var args = array_slice(arguments);
-                    args.push(P.nresolver(deferred));
-                    object[name].apply(object, args);
-                } catch (e) {
-                    deferred.reject(e);
-                }
-                return deferred.promise;
-            };
-        }
-        for (var i = 0; i < methods.length; i++) {
-            addResult(methods[i]);
-        }
-        return result;
-    };
-    P.ninvoke = P.ninvoke || function(object, name /* ...args */) {
-        var nodeArgs = array_slice(arguments, 2);
-        var deferred = P.defer();
-        nodeArgs.push(P.nresolver(deferred));
-        try {
-            object[name].apply(object, nodeArgs);
-        } catch (e) {
-            deferred.reject(e);
-        }
-        return deferred.promise;
-    };
-    P.nfapply = LIB.nfapply || function(method, args) {
-        var deferred = P.defer();
-        var nodeArgs = array_slice(args);
-        nodeArgs.push(P.nresolver(deferred));
-        try {
-            method.apply(method, nodeArgs);
-        } catch (e) {
-            deferred.reject(e);
-        }
-        return deferred.promise;
-    };
-    P.nfcall = LIB.nfcall || function(method/* ... args */) {
-        var args = array_slice(arguments, 1);
-        return P.nfapply(method, args);
-    };
-
-    return Mosaic;
-})(_dereq_);
+    }
+    for (var i = 0; i < methods.length; i++) {
+        addResult(methods[i]);
+    }
+    return result;
+};
+P.ninvoke = P.ninvoke || function(object, name /* ...args */) {
+    var nodeArgs = array_slice(arguments, 2);
+    var deferred = P.defer();
+    nodeArgs.push(P.nresolver(deferred));
+    try {
+        object[name].apply(object, nodeArgs);
+    } catch (e) {
+        deferred.reject(e);
+    }
+    return deferred.promise;
+};
+P.nfapply = LIB.nfapply || function(method, args) {
+    var deferred = P.defer();
+    var nodeArgs = array_slice(args);
+    nodeArgs.push(P.nresolver(deferred));
+    try {
+        method.apply(method, nodeArgs);
+    } catch (e) {
+        deferred.reject(e);
+    }
+    return deferred.promise;
+};
+P.nfcall = LIB.nfcall || function(method/* ... args */) {
+    var args = array_slice(arguments, 1);
+    return P.nfapply(method, args);
+};
 
 },{"./Mosaic":22,"when":18}],22:[function(_dereq_,module,exports){
-(function (global){
-(function(glob) {
-    'use strict';
-    module.exports = glob.Mosaic || {};
-})((typeof window !== "undefined" ? window
-        : typeof global !== "undefined" ? global : null));
+module.exports = {};
 
-}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],23:[function(_dereq_,module,exports){
 module.exports = _dereq_('./Mosaic');
 _dereq_('./Mosaic.Class');
