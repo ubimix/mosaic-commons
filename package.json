@@ -1,7 +1,7 @@
 {
     "name" : "mosaic-commons",
-    "version" : "0.0.4",
-    "main" : "src/index.js",
+    "version" : "0.0.5",
+    "main" : "src",
     "licenses" : [ {
         "type" : "MIT"
     } ],
