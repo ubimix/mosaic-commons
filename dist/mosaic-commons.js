@@ -646,10 +646,8 @@ define(function() {
 
 	return function array(Promise) {
 
-		var arrayMap = Array.prototype.map;
 		var arrayReduce = Array.prototype.reduce;
 		var arrayReduceRight = Array.prototype.reduceRight;
-		var arrayForEach = Array.prototype.forEach;
 
 		var toPromise = Promise.resolve;
 		var all = Promise.all;
@@ -661,6 +659,7 @@ define(function() {
 		Promise.settle = settle;
 
 		Promise.map = map;
+		Promise.filter = filter;
 		Promise.reduce = reduce;
 		Promise.reduceRight = reduceRight;
 
@@ -758,29 +757,69 @@ define(function() {
 			});
 		}
 
+		/**
+		 * Initialize a race observing each promise in the input promises
+		 * @param {Array} promises
+		 * @param {function} resolve
+		 * @param {function} reject
+		 * @param {?function=} notify
+		 * @returns {Number} actual count of items being raced
+		 */
 		function initRace(promises, resolve, reject, notify) {
-			var pending = 0;
-
-			arrayForEach.call(promises, function(p) {
-				++pending;
+			return arrayReduce.call(promises, function(pending, p) {
 				toPromise(p).then(resolve, reject, notify);
-			});
-
-			return pending;
+				return pending + 1;
+			}, 0);
 		}
 
 		/**
 		 * Apply f to the value of each promise in a list of promises
 		 * and return a new list containing the results.
 		 * @param {array} promises
-		 * @param {function} f
-		 * @param {function} fallback
+		 * @param {function(x:*, index:Number):*} f mapping function
 		 * @returns {Promise}
 		 */
-		function map(promises, f, fallback) {
-			return all(arrayMap.call(promises, function(x) {
-				return toPromise(x).then(f, fallback);
-			}));
+		function map(promises, f) {
+			if(typeof promises !== 'object') {
+				return toPromise([]);
+			}
+
+			return all(mapArray(function(x, i) {
+				return toPromise(x).fold(mapWithIndex, i);
+			}, promises));
+
+			function mapWithIndex(k, x) {
+				return f(x, k);
+			}
+		}
+
+		/**
+		 * Filter the provided array of promises using the provided predicate.  Input may
+		 * contain promises and values
+		 * @param {Array} promises array of promises and values
+		 * @param {function(x:*, index:Number):boolean} predicate filtering predicate.
+		 *  Must return truthy (or promise for truthy) for items to retain.
+		 * @returns {Promise} promise that will fulfill with an array containing all items
+		 *  for which predicate returned truthy.
+		 */
+		function filter(promises, predicate) {
+			return all(promises).then(function(values) {
+				return all(mapArray(predicate, values)).then(function(results) {
+					var len = results.length;
+					var filtered = new Array(len);
+					for(var i=0, j= 0, x; i<len; ++i) {
+						x = results[i];
+						if(x === void 0 && !(i in results)) {
+							continue;
+						}
+						if(results[i]) {
+							filtered[j++] = values[i];
+						}
+					}
+					filtered.length = j;
+					return filtered;
+				});
+			});
 		}
 
 		/**
@@ -788,19 +827,25 @@ define(function() {
 		 * the outcome states of all input promises.  The returned promise
 		 * will never reject.
 		 * @param {array} promises
-		 * @returns {Promise}
+		 * @returns {Promise} promise for array of settled state descriptors
 		 */
 		function settle(promises) {
-			return all(arrayMap.call(promises, function(p) {
+			return all(mapArray(function(p) {
 				p = toPromise(p);
 				return p.then(inspect, inspect);
 
 				function inspect() {
 					return p.inspect();
 				}
-			}));
+			}, promises));
 		}
 
+		/**
+		 * Reduce an array of promises and values
+		 * @param {Array} promises
+		 * @param {function(accumulated:*, x:*, index:Number):*} f reduce function
+		 * @returns {Promise} promise for reduced value
+		 */
 		function reduce(promises, f) {
 			var reducer = makeReducer(f);
 			return arguments.length > 2
@@ -808,6 +853,12 @@ define(function() {
 				: arrayReduce.call(promises, reducer);
 		}
 
+		/**
+		 * Reduce an array of promises and values from the right
+		 * @param {Array} promises
+		 * @param {function(accumulated:*, x:*, index:Number):*} f reduce function
+		 * @returns {Promise} promise for reduced value
+		 */
 		function reduceRight(promises, f) {
 			var reducer = makeReducer(f);
 			return arguments.length > 2
@@ -823,6 +874,19 @@ define(function() {
 					});
 				});
 			};
+		}
+
+		function mapArray(f, a) {
+			var l = a.length;
+			var b = new Array(l);
+			for(var i=0, x; i<l; ++i) {
+				x = a[i];
+				if(x === void 0 && !(i in a)) {
+					continue;
+				}
+				b[i] = f(a[i], i);
+			}
+			return b;
 		}
 	};
 
@@ -904,12 +968,11 @@ define(function() {
 		 */
 		Promise.prototype['finally'] = Promise.prototype.ensure = function(handler) {
 			if(typeof handler !== 'function') {
-				// Optimization: result will not change, return same promise
 				return this;
 			}
 
-			handler = isolate(handler, this);
-			return this.then(handler, handler);
+			var isolated = isolate(handler);
+			return this.then(isolated, isolated)['yield'](this);
 		};
 
 		/**
@@ -966,15 +1029,11 @@ define(function() {
 			|| (predicate != null && predicate.prototype instanceof Error);
 	}
 
-	// prevent argument passing to f and ignore return value
-	function isolate(f, x) {
+	function isolate(f) {
 		return function() {
-			f.call(this);
-			return x;
+			return f.call(this);
 		};
 	}
-
-//	function noop() {}
 
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
@@ -1016,11 +1075,25 @@ define(function() {
 (function(define) { 'use strict';
 define(function() {
 
-	return function inspect(Promise) {
+	return function inspection(Promise) {
 
 		Promise.prototype.inspect = function() {
-			return this._handler.inspect();
+			return inspect(Promise._handler(this));
 		};
+
+		function inspect(handler) {
+			var state = handler.state();
+
+			if(state === 0) {
+				return { state: 'pending' };
+			}
+
+			if(state > 0) {
+				return { state: 'fulfilled', value: handler.value };
+			}
+
+			return { state: 'rejected', reason: handler.value };
+		}
 
 		return Promise;
 	};
@@ -1326,8 +1399,13 @@ define(function() {
 		 *  the returned promise.
 		 * @returns {Promise}
 		 */
-		Promise.prototype['with'] = Promise.prototype.withThis
-			= Promise.prototype._bindContext;
+		Promise.prototype['with'] = Promise.prototype.withThis = function(receiver) {
+			var p = this._beget();
+			var child = p._handler;
+			child.receiver = receiver;
+			this._handler.chain(child, receiver);
+			return p;
+		};
 
 		return Promise;
 	};
@@ -1493,17 +1571,6 @@ define(function() {
 		};
 
 		/**
-		 * Private function to bind a thisArg for this promise's handlers
-		 * @private
-		 * @param {object} thisArg `this` value for all handlers attached to
-		 *  the returned promise.
-		 * @returns {Promise}
-		 */
-		Promise.prototype._bindContext = function(thisArg) {
-			return new Promise(Handler, new Bound(this._handler, thisArg));
-		};
-
-		/**
 		 * Creates a new, pending promise of the same type as this promise
 		 * @private
 		 * @returns {Promise}
@@ -1655,8 +1722,6 @@ define(function() {
 			= Handler.prototype._report
 			= noop;
 
-		Handler.prototype.inspect = toPendingState;
-
 		Handler.prototype._state = 0;
 
 		Handler.prototype.state = function() {
@@ -1726,10 +1791,6 @@ define(function() {
 		inherit(Handler, Pending);
 
 		Pending.prototype._state = 0;
-
-		Pending.prototype.inspect = function() {
-			return this.resolved ? this.join().inspect() : toPendingState();
-		};
 
 		Pending.prototype.resolve = function(x) {
 			this.become(getHandler(x));
@@ -1828,10 +1889,6 @@ define(function() {
 
 		inherit(Handler, Delegating);
 
-		Delegating.prototype.inspect = function() {
-			return this.join().inspect();
-		};
-
 		Delegating.prototype._report = function(context) {
 			this.join()._report(context);
 		};
@@ -1853,30 +1910,6 @@ define(function() {
 
 		Async.prototype.when = function(continuation) {
 			tasks.enqueue(new ContinuationTask(continuation, this));
-		};
-
-		/**
-		 * Handler that follows another handler, injecting a receiver
-		 * @param {object} handler another handler to follow
-		 * @param {object=undefined} receiver
-		 * @constructor
-		 */
-		function Bound(handler, receiver) {
-			Delegating.call(this, handler);
-			this.receiver = receiver;
-		}
-
-		inherit(Delegating, Bound);
-
-		Bound.prototype.when = function(continuation) {
-			// Because handlers are allowed to be shared among promises,
-			// each of which possibly having a different receiver, we have
-			// to insert our own receiver into the chain if it has been set
-			// so that callbacks (f, r, u) will be called using our receiver
-			if(this.receiver !== void 0) {
-				continuation.receiver = this.receiver;
-			}
-			this.join().when(continuation);
 		};
 
 		/**
@@ -1905,10 +1938,6 @@ define(function() {
 		inherit(Handler, Fulfilled);
 
 		Fulfilled.prototype._state = 1;
-
-		Fulfilled.prototype.inspect = function() {
-			return { state: 'fulfilled', value: this.value };
-		};
 
 		Fulfilled.prototype.fold = function(f, z, c, to) {
 			runContinuation3(f, z, this, c, to);
@@ -1940,17 +1969,14 @@ define(function() {
 
 		Rejected.prototype._state = -1;
 
-		Rejected.prototype.inspect = function() {
-			return { state: 'rejected', reason: this.value };
-		};
-
 		Rejected.prototype.fold = function(f, z, c, to) {
-			this._unreport();
 			to.become(this);
 		};
 
 		Rejected.prototype.when = function(cont) {
-			this._unreport();
+			if(typeof cont.rejected === 'function') {
+				this._unreport();
+			}
 			runContinuation1(cont.rejected, this, cont.receiver, cont.resolver);
 		};
 
@@ -2008,16 +2034,6 @@ define(function() {
 
 		function cycle() {
 			return new Rejected(new TypeError('Promise cycle'));
-		}
-
-		// Snapshot states
-
-		/**
-		 * Creates a pending state snapshot
-		 * @returns {{state:'pending'}}
-		 */
-		function toPendingState() {
-			return { state: 'pending' };
 		}
 
 		// Task runners
@@ -2219,7 +2235,7 @@ define(function(_dereq_) {
  * when is part of the cujoJS family of libraries (http://cujojs.com/)
  * @author Brian Cavalier
  * @author John Hann
- * @version 3.3.1
+ * @version 3.4.2
  */
 (function(define) { 'use strict';
 define(function (_dereq_) {
@@ -2266,6 +2282,7 @@ define(function (_dereq_) {
 	when.race        = lift(Promise.race);   // First-to-settle race
 
 	when.map         = map;                  // Array.map() for promises
+	when.filter      = filter;               // Array.filter() for promises
 	when.reduce      = reduce;               // Array.reduce() for promises
 	when.reduceRight = reduceRight;          // Array.reduceRight() for promises
 
@@ -2407,7 +2424,7 @@ define(function (_dereq_) {
 	 * the outcome states of all input promises.  The returned promise
 	 * will only reject if `promises` itself is a rejected promise.
 	 * @param {array|Promise} promises array (or promise for an array) of promises
-	 * @returns {Promise}
+	 * @returns {Promise} promise for array of settled state descriptors
 	 */
 	function settle(promises) {
 		return when(promises, Promise.settle);
@@ -2417,7 +2434,8 @@ define(function (_dereq_) {
 	 * Promise-aware array map function, similar to `Array.prototype.map()`,
 	 * but input array may contain promises or values.
 	 * @param {Array|Promise} promises array of anything, may contain promises and values
-	 * @param {function} mapFunc map function which may return a promise or value
+	 * @param {function(x:*, index:Number):*} mapFunc map function which may
+	 *  return a promise or value
 	 * @returns {Promise} promise that will fulfill with an array of mapped values
 	 *  or reject if any input promise rejects.
 	 */
@@ -2428,14 +2446,28 @@ define(function (_dereq_) {
 	}
 
 	/**
+	 * Filter the provided array of promises using the provided predicate.  Input may
+	 * contain promises and values
+	 * @param {Array|Promise} promises array of promises and values
+	 * @param {function(x:*, index:Number):boolean} predicate filtering predicate.
+	 *  Must return truthy (or promise for truthy) for items to retain.
+	 * @returns {Promise} promise that will fulfill with an array containing all items
+	 *  for which predicate returned truthy.
+	 */
+	function filter(promises, predicate) {
+		return when(promises, function(promises) {
+			return Promise.filter(promises, predicate);
+		});
+	}
+
+	/**
 	 * Traditional reduce function, similar to `Array.prototype.reduce()`, but
 	 * input may contain promises and/or values, and reduceFunc
 	 * may return either a value or a promise, *and* initialValue may
 	 * be a promise for the starting value.
-	 *
 	 * @param {Array|Promise} promises array or promise for an array of anything,
 	 *      may contain a mix of promises and values.
-	 * @param {function} f reduce function reduce(currentValue, nextValue, index)
+	 * @param {function(accumulated:*, x:*, index:Number):*} f reduce function
 	 * @returns {Promise} that will resolve to the final reduced value
 	 */
 	function reduce(promises, f /*, initialValue */) {
@@ -2452,10 +2484,9 @@ define(function (_dereq_) {
 	 * input may contain promises and/or values, and reduceFunc
 	 * may return either a value or a promise, *and* initialValue may
 	 * be a promise for the starting value.
-	 *
 	 * @param {Array|Promise} promises array or promise for an array of anything,
 	 *      may contain a mix of promises and values.
-	 * @param {function} f reduce function reduce(currentValue, nextValue, index)
+	 * @param {function(accumulated:*, x:*, index:Number):*} f reduce function
 	 * @returns {Promise} that will resolve to the final reduced value
 	 */
 	function reduceRight(promises, f /*, initialValue */) {
