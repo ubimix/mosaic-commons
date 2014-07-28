@@ -1,14 +1,12 @@
 var expect = require('expect.js');
-var Mosaic = require('..');
-var P = Mosaic.P;
+var P = require('..').P;
 var _ = require('underscore');
 
 describe('mosaic-commons/P', function() {
     function Divide(a, b, callback) {
         setTimeout(function() {
             try {
-                if (!b)
-                    throw new Error('Divide by zero.');
+                if (!b) throw new Error('Divide by zero.');
                 var result = a / b;
                 callback(null, result);
             } catch (e) {

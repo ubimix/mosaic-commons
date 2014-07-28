@@ -1,4 +1,4 @@
 mosaic-commons
-==============
+=========================
 
-Repository with common utility classes.
+A short description of this module.

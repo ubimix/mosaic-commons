@@ -18,8 +18,7 @@ function extend() {
  * Returns <code>true</code> if this type is the same as the specified object.
  */
 function isSameType(type) {
-    if (!type || !type._typeId)
-        return false;
+    if (!type || !type._typeId) return false;
     return this._typeId == type._typeId;
 }
 
@@ -28,8 +27,7 @@ function isSameType(type) {
  * specified type.
  */
 function isSubtype(type, includeThis) {
-    if (!type || !type._typeId)
-        return false;
+    if (!type || !type._typeId) return false;
     var result = false;
     for (var t = includeThis ? this : this.parent; // 
     !result && !!t && t._typeId !== undefined; t = t.parent) {
@@ -46,8 +44,7 @@ function instanceOf(type) {
 
 /** Returns true if the specified object is an instance of this class */
 function hasInstance(obj) {
-    if (!obj)
-        return false;
+    if (!obj) return false;
     return instanceOf.call(obj, this);
 }
 
@@ -85,5 +82,6 @@ function newClass() {
     return Type;
 }
 
-var Class = newClass();
+var Class = newClass().extend({});
+Class.parent = null;
 Mosaic.Class = Class;
