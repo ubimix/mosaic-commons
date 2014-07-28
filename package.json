@@ -1,30 +1,35 @@
 {
-    "name" : "mosaic-commons",
-    "version" : "0.0.7",
-    "main" : "src",
-    "licenses" : [ {
-        "type" : "MIT"
-    } ],
-    "contributors" : [ {
-        "name" : "Mikhail Kotelnikov",
-        "email" : "mikhail.kotelnikov"
-    } ],
-    "dependencies" : {
-        "underscore" : "~1.4.4",
-        "when" : "*"
-    },
-    "devDependencies" : {
-        "mocha" : "*",
-        "expect.js" : "*",
-        "grunt" : "^0.4.5",
-        "grunt-contrib-jshint" : "^0.10.0",
-        "grunt-contrib-uglify" : "~0.4.0",
-        "grunt-contrib-concat" : "^0.4.0",
-        "grunt-webpack" : "~1.0.7",
-        "grunt-mocha-test" : "^0.11.0",
-        "grunt-bump": "^0.0.14"
-    },
-    "scripts" : {
-        "test" : "mocha -R spec ./test/spec_*"
+  "name": "mosaic-commons",
+  "version": "0.0.7",
+  "main": "src",
+  "licenses": [
+    {
+      "type": "MIT"
     }
+  ],
+  "contributors": [
+    {
+      "name": "Mikhail Kotelnikov",
+      "email": "mikhail.kotelnikov"
+    }
+  ],
+  "dependencies": {
+    "underscore": "~1.4.4",
+    "when": "*"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "expect.js": "*",
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-uglify": "~0.4.0",
+    "grunt-contrib-concat": "^0.4.0",
+    "grunt-webpack": "~1.0.7",
+    "grunt-mocha-test": "^0.11.0",
+    "grunt-bump": "^0.0.14",
+    "umx-grunt-config": "0.0.1"
+  },
+  "scripts": {
+    "test": "mocha -R spec ./test/spec_*"
+  }
 }

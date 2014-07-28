@@ -1,4 +1,7 @@
-/*! mosaic-commons v0.0.7 | License: MIT  */
+/*!
+ * mosaic-commons v0.0.7 | License: MIT 
+ * 
+ */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(require("underscore"), require("events"), require("when"));
