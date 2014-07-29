@@ -27,7 +27,7 @@
     "grunt-webpack": "~1.0.7",
     "grunt-mocha-test": "^0.11.0",
     "grunt-bump": "^0.0.14",
-    "umx-grunt-config": "0.0.1"
+    "umx-grunt-config": "*"
   },
   "scripts": {
     "test": "mocha -R spec ./test/spec_*"
