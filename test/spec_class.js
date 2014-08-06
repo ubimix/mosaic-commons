@@ -34,12 +34,12 @@ describe('mosaic-commons/Class', function() {
     });
 
     describe('should build clean class hierarchy', function() {
-        it('Type.parent static property ' + // 
-        ' should reference parent type', function() {
-            expect(FirstClass.parent).to.be(Class);
-            expect(SecondClass.parent).to.be(FirstClass);
-            expect(ThirdClass.parent).to.be(SecondClass);
-            expect(ThirdClass.parent.parent).to.be(FirstClass);
+        it('Type.getParent() method ' + // 
+        ' should return parent type', function() {
+            expect(FirstClass.getParent()).to.be(Class);
+            expect(SecondClass.getParent()).to.be(FirstClass);
+            expect(ThirdClass.getParent()).to.be(SecondClass);
+            expect(ThirdClass.getParent().getParent()).to.be(FirstClass);
         });
 
         it('Type.isSameType function ' + //
