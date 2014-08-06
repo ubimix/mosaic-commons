@@ -11,7 +11,7 @@
 		exports["mosaic-commons"] = factory(require("underscore"), require("events"), require("when"));
 	else
 		root["mosaic-commons"] = factory(root["underscore"], root["events"], root["when"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_6__, __WEBPACK_EXTERNAL_MODULE_7__, __WEBPACK_EXTERNAL_MODULE_8__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_5__, __WEBPACK_EXTERNAL_MODULE_6__, __WEBPACK_EXTERNAL_MODULE_7__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -58,119 +58,106 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(1);
-	__webpack_require__(2);
-	__webpack_require__(3);
-	__webpack_require__(4);
-	__webpack_require__(5);
+	var Mosaic = module.exports = {};
+	Mosaic.Class = __webpack_require__(1);
+	Mosaic.Errors = __webpack_require__(2);
+	Mosaic.Events = __webpack_require__(3);
+	Mosaic.P = __webpack_require__(4);
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = {};
+	var _ = __webpack_require__(5);
+
+	var CLASS_KEY = 'class';
+
+	var ClassMixin = {
+	    /**
+	     * Returns <code>true</code> if this type is the same or is a subclass of
+	     * the specified type.
+	     */
+	    isSubtype : function(type, includeThis) {
+	        if (!type || !type._typeId) return false;
+	        var result = false;
+	        for (var t = includeThis ? this : this.parent; // 
+	        !result && !!t && t._typeId !== undefined; t = t.parent) {
+	            result = t._typeId == type._typeId;
+	        }
+	        return result;
+	    },
+
+	    /**
+	     * Returns <code>true</code> if this type is the same as the specified
+	     * object.
+	     */
+	    isSameType : function(type) {
+	        if (!type || !type._typeId) return false;
+	        return this._typeId == type._typeId;
+	    },
+
+	    /** Returns true if the specified object is an instance of this class */
+	    hasInstance : function(obj) {
+	        if (!obj) return false;
+	        return InstanceMixin.instanceOf.call(obj, this);
+	    },
+
+	    createClass : function(Factory, Parent, args) {
+	        var Type = Factory(Parent, args);
+	        _.extend(Type, ClassMixin);
+	        Type.extend = function() {
+	            return ClassMixin.createClass(Factory, this, _.toArray(arguments));
+	        };
+	        if (Parent) {
+	            _.extend(Type.prototype, Parent.prototype);
+	            _.extend(Type, Parent);
+	            Type.parent = Parent;
+	        }
+	        _.each(args, function(fields) {
+	            _.extend(Type.prototype, fields);
+	        });
+	        _.extend(Type.prototype, InstanceMixin);
+
+	        Type.prototype[CLASS_KEY] = Type;
+	        Type._typeId = _.uniqueId('type-');
+	        return Type;
+	    }
+
+	};
+
+	var InstanceMixin = {
+	    instanceOf : function(type) {
+	        var cls = this[CLASS_KEY];
+	        return ClassMixin.isSubtype.call(cls, type, true);
+	    },
+	    setOptions : function(options) {
+	        this.options = _.extend({}, this.options, options);
+	    },
+	    getClass : function() {
+	        return this[CLASS_KEY];
+	    },
+	    toString : function() {
+	        var cls = this[CLASS_KEY];
+	        return cls ? (cls._typeId) + '' : 'undefined';
+	    }
+	};
+
+	var Class = ClassMixin.createClass(function(Parent, args) {
+	    function Constructor() {
+	        if (this.initialize) {
+	            this.initialize.apply(this, arguments);
+	        }
+	    }
+	    return Constructor;
+	});
+	module.exports = Class;
 
 
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Mosaic = module.exports = __webpack_require__(1);
-	var _ = __webpack_require__(6);
-
-	/** Common superclass for all other types. */
-	function copy(to, from) {
-	    for ( var name in from) {
-	        if (_.has(from, name) && name !== 'prototype') {
-	            to[name] = from[name];
-	        }
-	    }
-	}
-	function extend() {
-	    var that = this;
-	    return newClass.apply(that, arguments);
-	}
-
-	/**
-	 * Returns <code>true</code> if this type is the same as the specified object.
-	 */
-	function isSameType(type) {
-	    if (!type || !type._typeId) return false;
-	    return this._typeId == type._typeId;
-	}
-
-	/**
-	 * Returns <code>true</code> if this type is the same or is a subclass of the
-	 * specified type.
-	 */
-	function isSubtype(type, includeThis) {
-	    if (!type || !type._typeId) return false;
-	    var result = false;
-	    for (var t = includeThis ? this : this.parent; // 
-	    !result && !!t && t._typeId !== undefined; t = t.parent) {
-	        result = t._typeId == type._typeId;
-	    }
-	    return result;
-	}
-
-	/** Returns true if this object is an instance of the specified type */
-	function instanceOf(type) {
-	    var cls = this['class'];
-	    return isSubtype.call(cls, type, true);
-	}
-
-	/** Returns true if the specified object is an instance of this class */
-	function hasInstance(obj) {
-	    if (!obj) return false;
-	    return instanceOf.call(obj, this);
-	}
-
-	var typeCounter = 0;
-	function newClass() {
-	    function Type() {
-	        if (this.initialize) {
-	            this.initialize.apply(this, arguments);
-	        }
-	    }
-	    Type.extend = extend;
-	    Type.isSameType = isSameType;
-	    Type.isSubtype = isSubtype;
-	    Type.hasInstance = hasInstance;
-	    if (this) {
-	        copy(Type, this);
-	        copy(Type.prototype, this.prototype);
-	        Type.parent = this;
-	    }
-	    _.each(arguments, function(fields) {
-	        copy(Type.prototype, fields);
-	    });
-	    Type.prototype.instanceOf = instanceOf;
-	    Type.prototype['class'] = Type;
-	    Type.prototype.getClass = function() {
-	        return Type;
-	    };
-	    Type.prototype.setOptions = function(options) {
-	        this.options = _.extend({}, this.options, options);
-	    };
-	    Type._typeId = typeCounter++;
-	    Type.toString = function() {
-	        return 'class-' + (Type._typeId) + '';
-	    };
-	    return Type;
-	}
-
-	var Class = newClass().extend({});
-	Class.parent = null;
-	Mosaic.Class = Class;
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Mosaic = module.exports = __webpack_require__(1);
-	var _ = __webpack_require__(6);
-	Mosaic.Errors = Errors;
+	var _ = __webpack_require__(5);
 
 	function Errors() {
 	    var m = Errors.newError;
@@ -184,14 +171,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var ErrorMethods = {
 	    code : function(value) {
-	        if (value === undefined)
-	            return this.status;
+	        if (value === undefined) return this.status;
 	        this.status = value;
 	        return this;
 	    },
 	    messageKey : function(value) {
-	        if (value === undefined)
-	            return this._messageKey;
+	        if (value === undefined) return this._messageKey;
 	        this._messageKey = value;
 	        return this;
 	    }
@@ -252,26 +237,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return obj ? JSON.parse(JSON.stringify(obj)) : null;
 	}
 
+	module.exports = Errors;
+
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Mosaic = module.exports = __webpack_require__(1);
+	var events = __webpack_require__(6);
+	var _ = __webpack_require__(5);
 
-	var events = __webpack_require__(7);
-	var _ = __webpack_require__(6);
-
-	Mosaic.Events = function() {
+	var Events = function() {
 	    events.EventEmitter.apply(this, arguments);
 	};
 
-	_.extend(Mosaic.Events.prototype, events.EventEmitter.prototype, {
+	_.extend(Events.prototype, events.EventEmitter.prototype, {
 	    fire : events.EventEmitter.prototype.emit
 	});
 
 	/** Mixin methods */
-	_.extend(Mosaic.Events, {
+	_.extend(Events, {
 
 	    /** Listens to events produced by external objects */
 	    listenTo : function(obj, event, handler, context) {
@@ -347,11 +332,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 	        return triggerMethod;
 	    })()
-
 	});
 
+	module.exports = Events;
+
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -385,13 +371,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	 *     
 	 */
-	var Mosaic = module.exports = __webpack_require__(1);
-	var LIB = __webpack_require__(8);
+	var LIB = __webpack_require__(7);
 	function array_slice(array, count) {
 	    return Array.prototype.slice.call(array, count);
 	}
 
-	Mosaic.P = P;
 	function P() {
 	    return LIB.apply(this, arguments);
 	}
@@ -510,6 +494,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return P.nfapply(method, args);
 	};
 
+	module.exports = P;
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_5__;
 
 /***/ },
 /* 6 */
@@ -522,12 +513,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_7__;
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_8__;
 
 /***/ }
 /******/ ])

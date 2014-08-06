@@ -1,5 +1,5 @@
-module.exports = require('./Mosaic');
-require('./Mosaic.Class');
-require('./Mosaic.Errors');
-require('./Mosaic.Events');
-require('./Mosaic.P');
+var Mosaic = module.exports = {};
+Mosaic.Class = require('./Class');
+Mosaic.Errors = require('./Errors');
+Mosaic.Events = require('./Events');
+Mosaic.P = require('./P');

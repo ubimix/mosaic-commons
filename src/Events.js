@@ -1,18 +1,16 @@
-var Mosaic = module.exports = require('./Mosaic');
-
 var events = require('events');
 var _ = require('underscore');
 
-Mosaic.Events = function() {
+var Events = function() {
     events.EventEmitter.apply(this, arguments);
 };
 
-_.extend(Mosaic.Events.prototype, events.EventEmitter.prototype, {
+_.extend(Events.prototype, events.EventEmitter.prototype, {
     fire : events.EventEmitter.prototype.emit
 });
 
 /** Mixin methods */
-_.extend(Mosaic.Events, {
+_.extend(Events, {
 
     /** Listens to events produced by external objects */
     listenTo : function(obj, event, handler, context) {
@@ -88,5 +86,6 @@ _.extend(Mosaic.Events, {
         };
         return triggerMethod;
     })()
-
 });
+
+module.exports = Events;

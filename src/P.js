@@ -29,13 +29,11 @@
 
  *     
  */
-var Mosaic = module.exports = require('./Mosaic');
 var LIB = require('when');
 function array_slice(array, count) {
     return Array.prototype.slice.call(array, count);
 }
 
-Mosaic.P = P;
 function P() {
     return LIB.apply(this, arguments);
 }
@@ -153,3 +151,5 @@ P.nfcall = LIB.nfcall || function(method/* ... args */) {
     var args = array_slice(arguments, 1);
     return P.nfapply(method, args);
 };
+
+module.exports = P;
