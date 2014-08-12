@@ -58,30 +58,36 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Mosaic = module.exports = {};
-	Mosaic.Class = __webpack_require__(1);
-	Mosaic.Errors = __webpack_require__(2);
-	Mosaic.Events = __webpack_require__(3);
-	Mosaic.P = __webpack_require__(4);
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;if (false) {
+	    var define = require('amdefine')(module);
+	}
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__, __webpack_require__(1), __webpack_require__(2), __webpack_require__(3), __webpack_require__(4) ], __WEBPACK_AMD_DEFINE_RESULT__ = (function(require) {
+	    var Mosaic = module.exports = {};
+	    Mosaic.Class = __webpack_require__(1);
+	    Mosaic.Errors = __webpack_require__(2);
+	    Mosaic.Events = __webpack_require__(3);
+	    Mosaic.P = __webpack_require__(4);
+	    return Mosaic;
+	}.apply(null, __WEBPACK_AMD_DEFINE_ARRAY__)), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(5);
-
-	var CLASS_KEY = '__type';
-	var META_KEY = '__meta';
-	var TYPE_ID_KEY = '__type_id';
-	var PARENT_KEY = '__parent';
-
-	function MetaClass(options) {
-	    options = options || {};
-	    _.extend(this.instanceFields, options.instanceFields);
-	    _.extend(this.classFields, options.classFields);
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;if (false) {
+	    var define = require('amdefine')(module);
 	}
-	_.extend(MetaClass.prototype, {
-	    instanceFields : {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__, __webpack_require__(5) ], __WEBPACK_AMD_DEFINE_RESULT__ = (function(require) {
+
+	    var _ = __webpack_require__(5);
+
+	    var CLASS_KEY = '__type';
+	    var META_KEY = '__meta';
+	    var TYPE_ID_KEY = '__type_id';
+	    var PARENT_KEY = '__parent';
+
+	    var instanceFields = {
 	        instanceOf : function(type) {
 	            var cls = this.__getClass();
 	            var meta = cls.getMetaClass();
@@ -100,8 +106,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        __getClass : function() {
 	            return this[CLASS_KEY];
 	        },
-	    },
-	    classFields : {
+	    };
+
+	    var classFields = {
 	        /**
 	         * Returns <code>true</code> if this type is the same or is a subclass
 	         * of the specified type.
@@ -110,7 +117,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (!type || !type[TYPE_ID_KEY])
 	                return false;
 	            var result = false;
-	            for (var t = includeThis ? this : this[PARENT_KEY]; // 
+	            for (var t = includeThis ? this : this[PARENT_KEY]; //
 	            !result && !!t && t[TYPE_ID_KEY] !== undefined; t = t[PARENT_KEY]) {
 	                result = t[TYPE_ID_KEY] == type[TYPE_ID_KEY];
 	            }
@@ -127,7 +134,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return this[TYPE_ID_KEY] == type[TYPE_ID_KEY];
 	        },
 
-	        /** Returns true if the specified object is an instance of this class */
+	        /**
+	         * Returns true if the specified object is an instance of this class
+	         */
 	        hasInstance : function(obj) {
 	            if (!obj || !obj.instanceOf)
 	                return false;
@@ -151,241 +160,270 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return child;
 	        }
 
-	    },
+	    };
 
-	    extendClassFields : function(Parent, Type, args) {
-	        _.extend(Type, this.classFields);
-	        _.extend(Type, Parent);
-	        Type[META_KEY] = this;
-	        Type[TYPE_ID_KEY] = _.uniqueId('type-');
-	        Type[PARENT_KEY] = Parent;
-	    },
-
-	    extendInstanceFields : function(Type, args) {
-	        var Parent = Type[PARENT_KEY];
-	        _.extend(Type.prototype, this.instanceFields);
-	        if (Parent) {
-	            _.each(_.keys(Parent.prototype), function(key) {
-	                Type.prototype[key] = Parent.prototype[key];
-	            });
-	        }
-	        _.each(args, function(fields) {
-	            _.extend(Type.prototype, fields);
-	        });
-	        Type.prototype[CLASS_KEY] = Type;
-	    },
-
-	    newType : function(Parent, args) {
-	        function Constructor() {
-	            if (this.initialize) {
-	                this.initialize.apply(this, arguments);
-	            }
-	        }
-	        return Constructor;
-	    },
-
-	    createClass : function(Parent, args) {
-	        var Type = this.newType(Parent, args);
-	        this.extendClassFields(Parent, Type, args);
-	        this.extendInstanceFields(Type, args);
-	        return Type;
+	    function MetaClass(options) {
+	        options = options || {};
+	        _.extend(this.instanceFields, options.instanceFields);
+	        _.extend(this.classFields, options.classFields);
 	    }
-	});
+	    _.extend(MetaClass.prototype, {
+	        instanceFields : instanceFields,
 
-	var metaClass = new MetaClass();
-	var Class = metaClass.createClass();
-	Class.MetaClass = MetaClass;
-	module.exports = Class;
+	        classFields : classFields,
 
+	        extendClassFields : function(Parent, Type, args) {
+	            _.extend(Type, this.classFields);
+	            _.extend(Type, Parent);
+	            Type[META_KEY] = this;
+	            Type[TYPE_ID_KEY] = _.uniqueId('type-');
+	            Type[PARENT_KEY] = Parent;
+	        },
+
+	        extendInstanceFields : function(Type, args) {
+	            var Parent = Type[PARENT_KEY];
+	            _.extend(Type.prototype, this.instanceFields);
+	            if (Parent) {
+	                _.each(_.keys(Parent.prototype), function(key) {
+	                    Type.prototype[key] = Parent.prototype[key];
+	                });
+	            }
+	            _.each(args, function(fields) {
+	                _.extend(Type.prototype, fields);
+	            });
+	            Type.prototype[CLASS_KEY] = Type;
+	        },
+
+	        newType : function(Parent, args) {
+	            function Constructor() {
+	                if (this.initialize) {
+	                    this.initialize.apply(this, arguments);
+	                }
+	            }
+	            return Constructor;
+	        },
+
+	        createClass : function(Parent, args) {
+	            var Type = this.newType(Parent, args);
+	            this.extendClassFields(Parent, Type, args);
+	            this.extendInstanceFields(Type, args);
+	            return Type;
+	        }
+	    });
+
+	    var metaClass = new MetaClass();
+	    var Class = metaClass.createClass();
+	    Class.MetaClass = MetaClass;
+	    return Class;
+
+	}.apply(null, __WEBPACK_AMD_DEFINE_ARRAY__)), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(5);
-
-	function Errors() {
-	    var m = Errors.newError;
-	    return m.apply(m, arguments);
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;if (false) {
+	    var define = require('amdefine')(module);
 	}
-	_.extend(Errors, {
-	    newError : newError,
-	    toJSON : toJSON,
-	    fromJSON : fromJSON
-	});
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__, __webpack_require__(5) ], __WEBPACK_AMD_DEFINE_RESULT__ = (function(require) {
 
-	var ErrorMethods = {
-	    code : function(value) {
-	        if (value === undefined) return this.status;
-	        this.status = value;
-	        return this;
-	    },
-	    messageKey : function(value) {
-	        if (value === undefined) return this._messageKey;
-	        this._messageKey = value;
-	        return this;
+	    var _ = __webpack_require__(5);
+
+	    function Errors() {
+	        var m = Errors.newError;
+	        return m.apply(m, arguments);
 	    }
-	};
+	    _.extend(Errors, {
+	        newError : newError,
+	        toJSON : toJSON,
+	        fromJSON : fromJSON
+	    });
 
-	function newError(o) {
-	    var obj;
-	    if (o instanceof Error) {
-	        obj = o;
-	    } else {
-	        if (_.isString(o) && o.indexOf('Error: ') === 0) {
-	            o = o.substring('Error: '.length);
+	    var ErrorMethods = {
+	        code : function(value) {
+	            if (value === undefined)
+	                return this.status;
+	            this.status = value;
+	            return this;
+	        },
+	        messageKey : function(value) {
+	            if (value === undefined)
+	                return this._messageKey;
+	            this._messageKey = value;
+	            return this;
 	        }
-	        obj = new Error(o);
-	    }
-	    _.extend(obj, ErrorMethods);
-	    return obj;
-	}
-
-	function fromJSON(obj) {
-	    var error = newError(obj.message);
-	    if (_.isArray(obj.trace)) {
-	        error.stack = obj.trace.join('\n');
-	    }
-	    if (obj.code) {
-	        error.code(obj.code);
-	    }
-	    if (obj.messageKey) {
-	        error.messageKey(obj.messageKey);
-	    }
-	    return error;
-	}
-
-	function toJSON(error) {
-	    var errObj = {
-	        message : 'ERROR'
 	    };
-	    if (error) {
-	        errObj.message = error + '';
-	        errObj.messageKey = error._messageKey;
-	        errObj.status = error.status || 500;
-	        if (_.isArray(error.stack)) {
-	            errObj.trace = clone(error.stack);
-	        } else if (_.isString(error.stack)) {
-	            errObj.trace = error.stack.split(/[\r\n]+/gim);
-	        } else if (_.isObject(error)) {
-	            _.each(_.keys(error), function(key) {
-	                errObj[key] = error[key];
-	            });
+
+	    function newError(o) {
+	        var obj;
+	        if (o instanceof Error) {
+	            obj = o;
 	        } else {
-	            errObj.trace = [ JSON.stringify(error) ];
+	            if (_.isString(o) && o.indexOf('Error: ') === 0) {
+	                o = o.substring('Error: '.length);
+	            }
+	            obj = new Error(o);
 	        }
+	        _.extend(obj, ErrorMethods);
+	        return obj;
 	    }
-	    return errObj;
-	}
 
-	function clone(obj) {
-	    return obj ? JSON.parse(JSON.stringify(obj)) : null;
-	}
+	    function fromJSON(obj) {
+	        var error = newError(obj.message);
+	        if (_.isArray(obj.trace)) {
+	            error.stack = obj.trace.join('\n');
+	        }
+	        if (obj.code) {
+	            error.code(obj.code);
+	        }
+	        if (obj.messageKey) {
+	            error.messageKey(obj.messageKey);
+	        }
+	        return error;
+	    }
 
-	module.exports = Errors;
+	    function toJSON(error) {
+	        var errObj = {
+	            message : 'ERROR'
+	        };
+	        if (error) {
+	            errObj.message = error + '';
+	            errObj.messageKey = error._messageKey;
+	            errObj.status = error.status || 500;
+	            if (_.isArray(error.stack)) {
+	                errObj.trace = clone(error.stack);
+	            } else if (_.isString(error.stack)) {
+	                errObj.trace = error.stack.split(/[\r\n]+/gim);
+	            } else if (_.isObject(error)) {
+	                _.each(_.keys(error), function(key) {
+	                    errObj[key] = error[key];
+	                });
+	            } else {
+	                errObj.trace = [ JSON.stringify(error) ];
+	            }
+	        }
+	        return errObj;
+	    }
+
+	    function clone(obj) {
+	        return obj ? JSON.parse(JSON.stringify(obj)) : null;
+	    }
+
+	    return Errors;
+	}.apply(null, __WEBPACK_AMD_DEFINE_ARRAY__)), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
 /***/ },
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var events = __webpack_require__(6);
-	var _ = __webpack_require__(5);
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;if (false) {
+	    var define = require('amdefine')(module);
+	}
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__, __webpack_require__(5), __webpack_require__(6) ], __WEBPACK_AMD_DEFINE_RESULT__ = (function(require) {
 
-	var Events = function() {
-	    events.EventEmitter.apply(this, arguments);
-	};
+	    var events = __webpack_require__(6);
+	    var _ = __webpack_require__(5);
 
-	_.extend(Events.prototype, events.EventEmitter.prototype, {
-	    fire : events.EventEmitter.prototype.emit
-	});
+	    var Events = function() {
+	        events.EventEmitter.apply(this, arguments);
+	    };
 
-	/** Mixin methods */
-	_.extend(Events, {
+	    _.extend(Events.prototype, events.EventEmitter.prototype, {
+	        fire : events.EventEmitter.prototype.emit
+	    });
 
-	    /** Listens to events produced by external objects */
-	    listenTo : function(obj, event, handler, context) {
-	        var listeners = this._listeners = this._listeners || [];
-	        context = context || this;
-	        obj.on(event, handler, context);
-	        listeners.push({
-	            obj : obj,
-	            event : event,
-	            handler : handler,
-	            context : context
-	        });
-	    },
+	    /** Mixin methods */
+	    _.extend(Events, {
 
-	    /** Removes all event listeners produced by external objects. */
-	    stopListening : function(object, event) {
-	        if (object) {
-	            this._listeners = _.filter(this._listeners, function(listener) {
-	                var keep = true;
-	                var context = listener.context || this;
-	                if (listener.obj == object) {
-	                    if (!event || event == listener.event) {
-	                        listener.obj.off(listener.event, listener.handler,
-	                                context);
-	                        keep = false;
+	        /** Listens to events produced by external objects */
+	        listenTo : function(obj, event, handler, context) {
+	            var listeners = this._listeners = this._listeners || [];
+	            context = context || this;
+	            obj.on(event, handler, context);
+	            listeners.push({
+	                obj : obj,
+	                event : event,
+	                handler : handler,
+	                context : context
+	            });
+	        },
+
+	        /** Removes all event listeners produced by external objects. */
+	        stopListening : function(object, event) {
+	            if (object) {
+	                this._listeners = _.filter(this._listeners, function(listener) {
+	                    var keep = true;
+	                    var context = listener.context || this;
+	                    if (listener.obj == object) {
+	                        if (!event || event == listener.event) {
+	                            listener.obj.off(listener.event, listener.handler,
+	                                    context);
+	                            keep = false;
+	                        }
 	                    }
+	                    return keep;
+	                }, this);
+	            } else {
+	                _.each(this._listeners,
+	                        function(listener) {
+	                            var context = listener.context || this;
+	                            listener.obj.off(listener.event, listener.handler,
+	                                    context);
+	                        }, this);
+	                delete this._listeners;
+	            }
+	        },
+
+	        /**
+	         * Trigger an event and/or a corresponding method name. Examples:
+	         * 
+	         * <ul>
+	         * <li> `this.triggerMethod(&quot;foo&quot;)` will trigger the
+	         * &quot;foo&quot; event and call the &quot;onFoo&quot; method.</li>
+	         * <li> `this.triggerMethod(&quot;foo:bar&quot;) will trigger the
+	         * &quot;foo:bar&quot; event and call the &quot;onFooBar&quot; method.</li>
+	         * </ul>
+	         * 
+	         * This method was copied from Marionette.triggerMethod.
+	         */
+	        triggerMethod : (function() {
+	            // split the event name on the :
+	            var splitter = /(^|:)(\w)/gi;
+	            // take the event section ("section1:section2:section3")
+	            // and turn it in to uppercase name
+	            function getEventName(match, prefix, eventName) {
+	                return eventName.toUpperCase();
+	            }
+	            // actual triggerMethod name
+	            var triggerMethod = function(event) {
+	                // get the method name from the event name
+	                var methodName = 'on' + event.replace(splitter, getEventName);
+	                var method = this[methodName];
+	                // trigger the event, if a trigger method exists
+	                if (_.isFunction(this.fire)) {
+	                    this.fire.apply(this, arguments);
 	                }
-	                return keep;
-	            }, this);
-	        } else {
-	            _.each(this._listeners, function(listener) {
-	                var context = listener.context || this;
-	                listener.obj.off(listener.event, listener.handler, context);
-	            }, this);
-	            delete this._listeners;
-	        }
-	    },
+	                // call the onMethodName if it exists
+	                if (_.isFunction(method)) {
+	                    // pass all arguments, except the event name
+	                    return method.apply(this, _.tail(arguments));
+	                }
+	            };
+	            return triggerMethod;
+	        })()
+	    });
 
-	    /**
-	     * Trigger an event and/or a corresponding method name. Examples:
-	     * 
-	     * <ul>
-	     * <li> `this.triggerMethod(&quot;foo&quot;)` will trigger the
-	     * &quot;foo&quot; event and call the &quot;onFoo&quot; method.</li>
-	     * <li> `this.triggerMethod(&quot;foo:bar&quot;) will trigger the
-	     * &quot;foo:bar&quot; event and call the &quot;onFooBar&quot; method.</li>
-	     * </ul>
-	     * 
-	     * This method was copied from Marionette.triggerMethod.
-	     */
-	    triggerMethod : (function() {
-	        // split the event name on the :
-	        var splitter = /(^|:)(\w)/gi;
-	        // take the event section ("section1:section2:section3")
-	        // and turn it in to uppercase name
-	        function getEventName(match, prefix, eventName) {
-	            return eventName.toUpperCase();
-	        }
-	        // actual triggerMethod name
-	        var triggerMethod = function(event) {
-	            // get the method name from the event name
-	            var methodName = 'on' + event.replace(splitter, getEventName);
-	            var method = this[methodName];
-	            // trigger the event, if a trigger method exists
-	            if (_.isFunction(this.fire)) {
-	                this.fire.apply(this, arguments);
-	            }
-	            // call the onMethodName if it exists
-	            if (_.isFunction(method)) {
-	                // pass all arguments, except the event name
-	                return method.apply(this, _.tail(arguments));
-	            }
-	        };
-	        return triggerMethod;
-	    })()
-	});
+	    return Events;
 
-	module.exports = Events;
+	}.apply(null, __WEBPACK_AMD_DEFINE_ARRAY__)), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
 
 /***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/*
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
 	 * Static methods: 
 	 *    P.promise                 - Create a pending promise
 	 *    P.resolve                 - Create a resolved promise
@@ -413,133 +451,139 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *                                forcing rejections to be thrown as exceptions.
 	 *    P.finally                 - Calls a callback regardless of whether
 	 *                                the promise is fulfilled or rejected. 
-
 	 *     
 	 */
-	var LIB = __webpack_require__(7);
-	function array_slice(array, count) {
-	    return Array.prototype.slice.call(array, count);
+	if (false) {
+	    var define = require('amdefine')(module);
 	}
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__, __webpack_require__(7) ], __WEBPACK_AMD_DEFINE_RESULT__ = (function(require) {
 
-	function P() {
-	    return LIB.apply(this, arguments);
-	}
-	var array = [ 'promise', 'resolve', 'reject', 'defer', 'join', 'all', 'spread' ];
-	for (var i = 0; i < array.length; i++) {
-	    P[array[i]] = LIB[array[i]];
-	}
-	P.promise = LIB.promise || function() {
-	    return new P();
-	};
-	P.then = LIB.then || function() {
-	    var p = new P();
-	    return p.then.apply(p, arguments);
-	};
-	P.fin = function(promise, method) {
-	    return promise.then(function(result) {
-	        return P.then(function() {
-	            return method(null, result);
-	        }).then(function() {
-	            return result;
+	    var LIB = __webpack_require__(7);
+	    function array_slice(array, count) {
+	        return Array.prototype.slice.call(array, count);
+	    }
+
+	    function P() {
+	        return LIB.apply(this, arguments);
+	    }
+	    var array = [ 'promise', 'resolve', 'reject', 'defer', 'join', 'all',
+	            'spread' ];
+	    for (var i = 0; i < array.length; i++) {
+	        P[array[i]] = LIB[array[i]];
+	    }
+	    P.promise = LIB.promise || function() {
+	        return new P();
+	    };
+	    P.then = LIB.then || function() {
+	        var p = new P();
+	        return p.then.apply(p, arguments);
+	    };
+	    P.fin = function(promise, method) {
+	        return promise.then(function(result) {
+	            return P.then(function() {
+	                return method(null, result);
+	            }).then(function() {
+	                return result;
+	            });
+	        }, function(err) {
+	            return P.then(function() {
+	                return method(err);
+	            }).then(function() {
+	                throw err;
+	            });
 	        });
-	    }, function(err) {
-	        return P.then(function() {
-	            return method(err);
-	        }).then(function() {
-	            throw err;
-	        });
-	    });
-	};
-	P.timeout = LIB.timeout ? LIB.timeout : function(ms, message) {
-	    var deferred = P.defer();
-	    var timeoutId = setTimeout(function() {
-	        message = message || //
-	        "Timed out after " + ms + " ms";
-	        deferred.reject(new Error(message));
-	    }, ms);
-	    return deferred.promise.then(function(value) {
-	        clearTimeout(timeoutId);
-	        return value;
-	    }, function(exception) {
-	        clearTimeout(timeoutId);
-	        throw exception;
-	    });
-	};
-	P.delay = LIB.delay || function(timeout) {
-	    timeout = timeout || 0;
-	    return P.then(function(value) {
+	    };
+	    P.timeout = LIB.timeout ? LIB.timeout : function(ms, message) {
 	        var deferred = P.defer();
 	        var timeoutId = setTimeout(function() {
-	            deferred.resolve(value);
-	        }, timeout);
-	        deferred.promise.cancel = function() {
+	            message = message || //
+	            "Timed out after " + ms + " ms";
+	            deferred.reject(new Error(message));
+	        }, ms);
+	        return deferred.promise.then(function(value) {
 	            clearTimeout(timeoutId);
-	            deferred.resolve(value);
-	        };
-	        return deferred.promise;
-	    });
-	};
-	P.nresolver = function(deferred) {
-	    return function(error, value) {
-	        if (error) {
-	            deferred.reject(error);
-	        } else if (arguments.length > 2) {
-	            deferred.resolve(array_slice(arguments, 1));
-	        } else {
-	            deferred.resolve(value);
-	        }
+	            return value;
+	        }, function(exception) {
+	            clearTimeout(timeoutId);
+	            throw exception;
+	        });
 	    };
-	};
-	P.nwrapper = function(object, methods) {
-	    var result = {
-	        instance : object
-	    };
-	    function addResult(name) {
-	        result[name] = function() {
+	    P.delay = LIB.delay || function(timeout) {
+	        timeout = timeout || 0;
+	        return P.then(function(value) {
 	            var deferred = P.defer();
-	            try {
-	                var args = array_slice(arguments);
-	                args.push(P.nresolver(deferred));
-	                object[name].apply(object, args);
-	            } catch (e) {
-	                deferred.reject(e);
-	            }
+	            var timeoutId = setTimeout(function() {
+	                deferred.resolve(value);
+	            }, timeout);
+	            deferred.promise.cancel = function() {
+	                clearTimeout(timeoutId);
+	                deferred.resolve(value);
+	            };
 	            return deferred.promise;
+	        });
+	    };
+	    P.nresolver = function(deferred) {
+	        return function(error, value) {
+	            if (error) {
+	                deferred.reject(error);
+	            } else if (arguments.length > 2) {
+	                deferred.resolve(array_slice(arguments, 1));
+	            } else {
+	                deferred.resolve(value);
+	            }
 	        };
-	    }
-	    for (var i = 0; i < methods.length; i++) {
-	        addResult(methods[i]);
-	    }
-	    return result;
-	};
-	P.ninvoke = P.ninvoke || function(object, name /* ...args */) {
-	    var nodeArgs = array_slice(arguments, 2);
-	    var deferred = P.defer();
-	    nodeArgs.push(P.nresolver(deferred));
-	    try {
-	        object[name].apply(object, nodeArgs);
-	    } catch (e) {
-	        deferred.reject(e);
-	    }
-	    return deferred.promise;
-	};
-	P.nfapply = LIB.nfapply || function(method, args) {
-	    var deferred = P.defer();
-	    var nodeArgs = array_slice(args);
-	    nodeArgs.push(P.nresolver(deferred));
-	    try {
-	        method.apply(method, nodeArgs);
-	    } catch (e) {
-	        deferred.reject(e);
-	    }
-	    return deferred.promise;
-	};
-	P.nfcall = LIB.nfcall || function(method/* ... args */) {
-	    var args = array_slice(arguments, 1);
-	    return P.nfapply(method, args);
-	};
+	    };
+	    P.nwrapper = function(object, methods) {
+	        var result = {
+	            instance : object
+	        };
+	        function addResult(name) {
+	            result[name] = function() {
+	                var deferred = P.defer();
+	                try {
+	                    var args = array_slice(arguments);
+	                    args.push(P.nresolver(deferred));
+	                    object[name].apply(object, args);
+	                } catch (e) {
+	                    deferred.reject(e);
+	                }
+	                return deferred.promise;
+	            };
+	        }
+	        for (var i = 0; i < methods.length; i++) {
+	            addResult(methods[i]);
+	        }
+	        return result;
+	    };
+	    P.ninvoke = P.ninvoke || function(object, name /* ...args */) {
+	        var nodeArgs = array_slice(arguments, 2);
+	        var deferred = P.defer();
+	        nodeArgs.push(P.nresolver(deferred));
+	        try {
+	            object[name].apply(object, nodeArgs);
+	        } catch (e) {
+	            deferred.reject(e);
+	        }
+	        return deferred.promise;
+	    };
+	    P.nfapply = LIB.nfapply || function(method, args) {
+	        var deferred = P.defer();
+	        var nodeArgs = array_slice(args);
+	        nodeArgs.push(P.nresolver(deferred));
+	        try {
+	            method.apply(method, nodeArgs);
+	        } catch (e) {
+	            deferred.reject(e);
+	        }
+	        return deferred.promise;
+	    };
+	    P.nfcall = LIB.nfcall || function(method/* ... args */) {
+	        var args = array_slice(arguments, 1);
+	        return P.nfapply(method, args);
+	    };
 
-	module.exports = P;
+	    return P;
+	}.apply(null, __WEBPACK_AMD_DEFINE_ARRAY__)), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
 /* 5 */

@@ -15,7 +15,8 @@
   ],
   "dependencies": {
     "underscore": "~1.4.4",
-    "when": "*"
+    "when": "*",
+    "amdefine" : "*"
   },
   "devDependencies": {
     "mocha": "*",
