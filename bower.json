@@ -1,6 +1,6 @@
 {
     "name": "mosaic-commons",
-  	"version": "0.0.11",
+  	"version": "0.0.12",
     "main" : "src",
     "dependencies" : {
         "underscore" : "~1.4.4",
