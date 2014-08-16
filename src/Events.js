@@ -3,23 +3,66 @@ if (typeof define !== 'function') {
 }
 define(
 // Dependencies
-[ 'require', 'underscore', 'events' ],
+[ 'require', 'underscore' ],
 // Module
 function(require) {
 
-    var events = require('events');
     var _ = require('underscore');
 
-    var Events = function() {
-        events.EventEmitter.apply(this, arguments);
+    /** Events mixins */
+    var EventsMixin = {
+        /** Registers listeners for the specified event key. */
+        on : function(eventKey, handler, context) {
+            var listeners = this.__listeners = this.__listeners || {};
+            context = context || this;
+            var list = listeners[eventKey] = listeners[eventKey] || [];
+            list.push({
+                handler : handler,
+                context : context
+            });
+        },
+        /** Removes a listener for events with the specified event key */
+        off : function(eventKey, handler, context) {
+            var listeners = this.__listeners;
+            if (!listeners)
+                return;
+            var list = listeners[eventKey];
+            if (!list)
+                return;
+            list = _.filter(list, function(slot) {
+                var match = (slot.handler === handler);
+                match &= (!context || slot.context === context);
+                return !match;
+            });
+            listeners[eventKey] = list.length ? list : undefined;
+        },
+        /** Fires an event with the specified key. */
+        fire : function(eventKey) {
+            var listeners = this.__listeners;
+            if (!listeners)
+                return;
+            var list = listeners[eventKey];
+            if (!list)
+                return;
+            var args = _.toArray(arguments);
+            args.splice(0, 1);
+            _.each(list, function(slot) {
+                slot.handler.apply(slot.context, args);
+            });
+        }
     };
+    EventsMixin.addListener = EventsMixin.on;
+    EventsMixin.removeListener = EventsMixin.off;
+    EventsMixin.emit = EventsMixin.fire;
 
-    _.extend(Events.prototype, events.EventEmitter.prototype, {
-        fire : events.EventEmitter.prototype.emit
-    });
+    var Events = function() {
+    };
+    _.extend(Events.prototype, EventsMixin);
 
     /** Mixin methods */
     _.extend(Events, {
+
+        EventsMixin : EventsMixin,
 
         /** Listens to events produced by external objects */
         listenTo : function(obj, event, handler, context) {

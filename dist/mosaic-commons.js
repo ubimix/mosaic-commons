@@ -4,14 +4,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("underscore"), require("events"), require("when"));
+		module.exports = factory(require("underscore"), require("when"));
 	else if(typeof define === 'function' && define.amd)
-		define(["underscore", "events", "when"], factory);
+		define(["underscore", "when"], factory);
 	else if(typeof exports === 'object')
-		exports["mosaic-commons"] = factory(require("underscore"), require("events"), require("when"));
+		exports["mosaic-commons"] = factory(require("underscore"), require("when"));
 	else
-		root["mosaic-commons"] = factory(root["underscore"], root["events"], root["when"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_5__, __WEBPACK_EXTERNAL_MODULE_6__, __WEBPACK_EXTERNAL_MODULE_7__) {
+		root["mosaic-commons"] = factory(root["underscore"], root["when"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_5__, __WEBPACK_EXTERNAL_MODULE_6__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -320,21 +320,64 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;if (false) {
 	    var define = require('amdefine')(module);
 	}
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__, __webpack_require__(5), __webpack_require__(6) ], __WEBPACK_AMD_DEFINE_RESULT__ = (function(require) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__, __webpack_require__(5) ], __WEBPACK_AMD_DEFINE_RESULT__ = (function(require) {
 
-	    var events = __webpack_require__(6);
 	    var _ = __webpack_require__(5);
 
-	    var Events = function() {
-	        events.EventEmitter.apply(this, arguments);
+	    /** Events mixins */
+	    var EventsMixin = {
+	        /** Registers listeners for the specified event key. */
+	        on : function(eventKey, handler, context) {
+	            var listeners = this.__listeners = this.__listeners || {};
+	            context = context || this;
+	            var list = listeners[eventKey] = listeners[eventKey] || [];
+	            list.push({
+	                handler : handler,
+	                context : context
+	            });
+	        },
+	        /** Removes a listener for events with the specified event key */
+	        off : function(eventKey, handler, context) {
+	            var listeners = this.__listeners;
+	            if (!listeners)
+	                return;
+	            var list = listeners[eventKey];
+	            if (!list)
+	                return;
+	            list = _.filter(list, function(slot) {
+	                var match = (slot.handler === handler);
+	                match &= (!context || slot.context === context);
+	                return !match;
+	            });
+	            listeners[eventKey] = list.length ? list : undefined;
+	        },
+	        /** Fires an event with the specified key. */
+	        fire : function(eventKey) {
+	            var listeners = this.__listeners;
+	            if (!listeners)
+	                return;
+	            var list = listeners[eventKey];
+	            if (!list)
+	                return;
+	            var args = _.toArray(arguments);
+	            args.splice(0, 1);
+	            _.each(list, function(slot) {
+	                slot.handler.apply(slot.context, args);
+	            });
+	        }
 	    };
+	    EventsMixin.addListener = EventsMixin.on;
+	    EventsMixin.removeListener = EventsMixin.off;
+	    EventsMixin.emit = EventsMixin.fire;
 
-	    _.extend(Events.prototype, events.EventEmitter.prototype, {
-	        fire : events.EventEmitter.prototype.emit
-	    });
+	    var Events = function() {
+	    };
+	    _.extend(Events.prototype, EventsMixin);
 
 	    /** Mixin methods */
 	    _.extend(Events, {
+
+	        EventsMixin : EventsMixin,
 
 	        /** Listens to events produced by external objects */
 	        listenTo : function(obj, event, handler, context) {
@@ -456,9 +499,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	if (false) {
 	    var define = require('amdefine')(module);
 	}
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__, __webpack_require__(7) ], __WEBPACK_AMD_DEFINE_RESULT__ = (function(require) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__, __webpack_require__(6) ], __WEBPACK_AMD_DEFINE_RESULT__ = (function(require) {
 
-	    var LIB = __webpack_require__(7);
+	    var LIB = __webpack_require__(6);
 	    function array_slice(array, count) {
 	        return Array.prototype.slice.call(array, count);
 	    }
@@ -596,12 +639,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_6__;
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_7__;
 
 /***/ }
 /******/ ])
