@@ -3,7 +3,7 @@
   	"version": "0.0.13",
     "main" : "src",
     "dependencies" : {
-        "underscore" : "~1.4.4",
+        "underscore" : "*",
         "when" : "*"
     }
 }
