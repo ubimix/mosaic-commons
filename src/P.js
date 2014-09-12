@@ -139,7 +139,8 @@ function(require) {
         var deferred = P.defer();
         nodeArgs.push(P.nresolver(deferred));
         try {
-            object[name].apply(object, nodeArgs);
+            var f = (typeof name) == 'function' ? name : object[name];
+            f.apply(object, nodeArgs);
         } catch (e) {
             deferred.reject(e);
         }
