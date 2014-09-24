@@ -1,12 +1,3 @@
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
-define(
-// Dependencies
-[ 'require', 'underscore' ],
-// Module
-function(require) {
-
     var _ = require('underscore');
 
     var CLASS_KEY = '__type';
@@ -141,6 +132,5 @@ function(require) {
     var metaClass = new MetaClass();
     var Class = metaClass.createClass();
     Class.MetaClass = MetaClass;
-    return Class;
+    module.exports = Class;
 
-});

@@ -1,12 +1,3 @@
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
-define(
-// Dependencies
-[ 'require', 'underscore' ],
-// Module
-function(require) {
-
     var _ = require('underscore');
 
     /** Events mixins */
@@ -142,6 +133,5 @@ function(require) {
         })()
     });
 
-    return Events;
+    module.exports = Events;
 
-});

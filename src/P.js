@@ -28,14 +28,6 @@
  *                                the promise is fulfilled or rejected. 
  *     
  */
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
-define(
-// Dependencies
-[ 'require', 'when' ],
-// Module
-function(require) {
 
     var LIB = require('when');
     function array_slice(array, count) {
@@ -162,5 +154,4 @@ function(require) {
         return P.nfapply(method, args);
     };
 
-    return P;
-});
+    module.exports = P;
