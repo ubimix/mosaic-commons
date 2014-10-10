@@ -1,5 +1,5 @@
 /*!
- * mosaic-commons v0.0.14 | License: MIT 
+ * mosaic-commons v0.0.15 | License: MIT 
  * 
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -603,7 +603,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var deferred = P.defer();
 	        nodeArgs.push(P.nresolver(deferred));
 	        try {
-	            object[name].apply(object, nodeArgs);
+	            var f = (typeof name) == 'function' ? name : object[name];
+	            f.apply(object, nodeArgs);
 	        } catch (e) {
 	            deferred.reject(e);
 	        }
